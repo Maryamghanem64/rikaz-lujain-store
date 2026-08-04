@@ -15,14 +15,14 @@ Route::middleware('guest')->group(function () {
         ->name('admin.login.submit');
 });
 
-Route::middleware('auth')->prefix('admin')->group(function () {
+Route::middleware(['auth', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/dashboard', function () {
+    return view('admin.dashboard');
+})->name('dashboard');
 
-    Route::get('/dashboard', function () {
-        abort_unless(auth()->user()->role === 'admin', 403);
-
-        return 'Admin Dashboard';
-    })->name('admin.dashboard');
-
-    Route::post('/logout', [AuthController::class, 'logout'])
-        ->name('admin.logout');
-});
+        Route::post('/logout', [AuthController::class, 'logout'])
+            ->name('logout');
+    });
