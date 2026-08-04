@@ -1,29 +1,11 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.admin')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+@section('title', 'لوحة الإدارة')
 
-    <title>لوحة الإدارة</title>
-</head>
+@section('content')
+    <h2>لوحة الإدارة</h2>
 
-<body>
-    <main>
-        <h1>لوحة الإدارة</h1>
-
-        <p>
-            مرحبًا {{ auth()->user()->name }}
-        </p>
-
-        <form method="POST" action="{{ route('admin.logout') }}">
-            @csrf
-
-            <button type="submit">
-                تسجيل الخروج
-            </button>
-        </form>
-    </main>
-</body>
-</html>
+    <p>
+        مرحبًا {{ auth()->user()->name }}
+    </p>
+@endsection

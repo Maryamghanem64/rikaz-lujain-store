@@ -1,16 +1,9 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.admin-guest')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+@section('title', 'تسجيل دخول الإدارة')
 
-    <title>تسجيل دخول الإدارة</title>
-</head>
-
-<body>
-    <main>
+@section('content')
+    <section>
         <h1>تسجيل دخول الإدارة</h1>
 
         @if ($errors->any())
@@ -52,6 +45,5 @@
                 تسجيل الدخول
             </button>
         </form>
-    </main>
-</body>
-</html>
+    </section>
+@endsection
