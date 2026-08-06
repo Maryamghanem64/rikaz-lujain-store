@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\DeliveryZoneController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\StorefrontController;
 use App\Http\Controllers\CartController;
-
+use App\Http\Controllers\CheckoutController;
 
 Route::middleware('guest')->group(function () {
     Route::get('/admin/login', [AuthController::class, 'showLogin'])
@@ -128,3 +128,17 @@ Route::delete(
     '/cart',
     [CartController::class, 'clear']
 )->name('cart.clear');
+Route::get(
+    '/checkout',
+    [CheckoutController::class, 'show']
+)->name('checkout.show');
+
+
+Route::post(
+    '/checkout',
+    [CheckoutController::class, 'store']
+)->name('checkout.store');
+Route::get(
+    '/order/{orderNumber}/success',
+    [CheckoutController::class, 'success']
+)->name('checkout.success');

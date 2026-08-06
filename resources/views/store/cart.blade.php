@@ -300,12 +300,12 @@
                     </p>
 
 
-                    <button
-                        type="button"
-                        class="mt-6 w-full rounded-xl bg-stone-900 px-6 py-4 font-semibold text-white"
-                    >
-                        متابعة الطلب
-                    </button>
+                    <a
+    href="{{ route('checkout.show') }}"
+    class="mt-6 block w-full rounded-xl bg-stone-900 px-6 py-4 text-center font-semibold text-white"
+>
+    متابعة الطلب
+</a>
 
                 </div>
 

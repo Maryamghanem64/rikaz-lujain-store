@@ -9,7 +9,28 @@ class ImageService
 {
     public function uploadProductImage(UploadedFile $file): array
     {
-        $path = $file->store('products', 'public');
+        return $this->upload(
+            $file,
+            'products'
+        );
+    }
+
+    public function uploadPaymentProof(UploadedFile $file): array
+    {
+        return $this->upload(
+            $file,
+            'payment-proofs'
+        );
+    }
+
+    private function upload(
+        UploadedFile $file,
+        string $folder
+    ): array {
+        $path = $file->store(
+            $folder,
+            'public'
+        );
 
         return [
             'url' => Storage::url($path),
@@ -23,6 +44,7 @@ class ImageService
             return;
         }
 
-        Storage::disk('public')->delete($publicId);
+        Storage::disk('public')
+            ->delete($publicId);
     }
 }
