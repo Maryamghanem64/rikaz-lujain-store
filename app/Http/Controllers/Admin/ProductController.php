@@ -1,0 +1,139 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreProductRequest;
+use App\Http\Requests\Admin\UpdateProductRequest;
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
+
+class ProductController extends Controller
+{
+    public function index(): View
+    {
+        $products = Product::with([
+                'category.section',
+                'primaryImage',
+            ])
+            ->latest()
+            ->paginate(20);
+
+        return view(
+            'admin.products.index',
+            compact('products')
+        );
+    }
+
+    public function create(): View
+    {
+        $categories = Category::with('section')
+            ->where('is_active', true)
+            ->orderBy('section_id')
+            ->orderBy('sort_order')
+            ->get();
+
+        return view(
+            'admin.products.create',
+            compact('categories')
+        );
+    }
+
+    public function store(
+        StoreProductRequest $request
+    ): RedirectResponse {
+        $data = $request->validated();
+
+        $data['is_active'] =
+            $request->boolean('is_active');
+
+        $data['is_featured'] =
+            $request->boolean('is_featured');
+
+        $data['reserved_quantity'] = 0;
+
+        $product = Product::create($data);
+
+        return redirect()
+            ->route('admin.products.edit', $product)
+            ->with(
+                'success',
+                'تم إنشاء المنتج بنجاح. يمكنك الآن إضافة الصور.'
+            );
+    }
+
+    public function show(Product $product): View
+    {
+        $product->load([
+            'category.section',
+            'images',
+        ]);
+
+        return view(
+            'admin.products.show',
+            compact('product')
+        );
+    }
+
+    public function edit(Product $product): View
+    {
+        $categories = Category::with('section')
+            ->where('is_active', true)
+            ->orderBy('section_id')
+            ->orderBy('sort_order')
+            ->get();
+
+        $product->load('images');
+
+        return view(
+            'admin.products.edit',
+            compact('product', 'categories')
+        );
+    }
+
+    public function update(
+        UpdateProductRequest $request,
+        Product $product
+    ): RedirectResponse {
+        $data = $request->validated();
+
+        $data['is_active'] =
+            $request->boolean('is_active');
+
+        $data['is_featured'] =
+            $request->boolean('is_featured');
+
+        $product->update($data);
+
+        return back()->with(
+            'success',
+            'تم تحديث المنتج بنجاح.'
+        );
+    }
+
+    public function destroy(
+        Product $product
+    ): RedirectResponse {
+        if ($product->orderItems()->exists()) {
+            $product->update([
+                'is_active' => false,
+            ]);
+
+            return back()->with(
+                'success',
+                'المنتج مرتبط بطلبات سابقة، لذلك تم إخفاؤه بدل حذفه.'
+            );
+        }
+
+        $product->delete();
+
+        return redirect()
+            ->route('admin.products.index')
+            ->with(
+                'success',
+                'تم حذف المنتج بنجاح.'
+            );
+    }
+}

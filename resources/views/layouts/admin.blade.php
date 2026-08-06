@@ -12,8 +12,19 @@
 <body>
     <header>
         <h1>إدارة متجر ركاز × لجين</h1>
+<nav>
+    <a href="{{ route('admin.dashboard') }}">
+        لوحة التحكم
+    </a>
 
-        <div>
+    <a href="{{ route('admin.categories.index') }}">
+        الفئات
+    </a>
+
+    <a href="{{ route('admin.products.index') }}">
+        المنتجات
+    </a>
+</nav> <div>
             <span>{{ auth()->user()->name }}</span>
 
             <form method="POST" action="{{ route('admin.logout') }}">

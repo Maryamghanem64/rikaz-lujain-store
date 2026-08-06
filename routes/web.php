@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -19,10 +20,16 @@ Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', function () {
-    return view('admin.dashboard');
-})->name('dashboard');
 
+        Route::get('/dashboard', function () {
+            return view('admin.dashboard');
+        })->name('dashboard');
+
+        Route::resource('categories', CategoryController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('products', ProductController::class);Route::resource('products', ProductController::class);
         Route::post('/logout', [AuthController::class, 'logout'])
             ->name('logout');
     });
+
+        
