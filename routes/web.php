@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\DeliveryZoneController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\StorefrontController;
-
+use App\Http\Controllers\CartController;
 
 
 Route::middleware('guest')->group(function () {
@@ -100,3 +100,31 @@ Route::get(
 )
     ->whereIn('sectionSlug', ['rikaz', 'lujain'])
     ->name('store.section');
+    Route::get(
+    '/cart',
+    [CartController::class, 'index']
+)->name('cart.index');
+
+
+Route::post(
+    '/cart/{product}',
+    [CartController::class, 'store']
+)->name('cart.store');
+
+
+Route::patch(
+    '/cart/{product}',
+    [CartController::class, 'update']
+)->name('cart.update');
+
+
+Route::delete(
+    '/cart/{product}',
+    [CartController::class, 'destroy']
+)->name('cart.destroy');
+
+
+Route::delete(
+    '/cart',
+    [CartController::class, 'clear']
+)->name('cart.clear');

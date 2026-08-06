@@ -20,7 +20,9 @@
 </head>
 
 <body class="bg-stone-50 text-stone-900">
-
+@php
+    $cartCount = app(\App\Services\CartService::class)->count();
+@endphp
 <header class="border-b bg-white">
 
     <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
@@ -54,7 +56,22 @@
             >
                 لجين
             </a>
+<a
+    href="{{ route('cart.index') }}"
+    class="hover:opacity-70"
+>
+    السلة
 
+    @if ($cartCount > 0)
+
+        <span
+            class="mr-1 rounded-full bg-stone-900 px-2 py-1 text-xs text-white"
+        >
+            {{ $cartCount }}
+        </span>
+
+    @endif
+</a>
         </nav>
 
     </div>

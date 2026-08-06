@@ -276,12 +276,42 @@
 
                     @if ($product->available_quantity > 0)
 
-                        <button
-                            type="button"
-                            class="w-full rounded-xl bg-stone-900 px-6 py-4 text-lg font-semibold text-white"
-                        >
-                            اطلب الآن
-                        </button>
+                        <form
+    method="POST"
+    action="{{ route('cart.store', $product) }}"
+>
+    @csrf
+
+    <div class="mb-4">
+
+        <label
+            for="quantity"
+            class="mb-2 block font-medium"
+        >
+            الكمية
+        </label>
+
+        <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            value="1"
+            min="1"
+            max="{{ $product->available_quantity }}"
+            class="w-24 rounded-xl border border-stone-300 px-4 py-3"
+            required
+        >
+
+    </div>
+
+    <button
+        type="submit"
+        class="w-full rounded-xl bg-stone-900 px-6 py-4 text-lg font-semibold text-white"
+    >
+        أضف إلى السلة
+    </button>
+
+</form>
 
                         <p class="mt-3 text-center text-sm text-stone-500">
                             لا تحتاج إلى إنشاء حساب لإتمام الطلب.
