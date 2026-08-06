@@ -7,10 +7,9 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\DeliveryZoneController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\StorefrontController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 Route::middleware('guest')->group(function () {
     Route::get('/admin/login', [AuthController::class, 'showLogin'])
@@ -73,4 +72,31 @@ Route::put(
             ->name('logout');
     });
 
-        
+        Route::get(
+    '/',
+    [StorefrontController::class, 'home']
+)->name('store.home');
+
+
+Route::get(
+    '/{sectionSlug}/product/{productSlug}',
+    [StorefrontController::class, 'product']
+)
+    ->whereIn('sectionSlug', ['rikaz', 'lujain'])
+    ->name('store.product');
+
+
+Route::get(
+    '/{sectionSlug}/{categorySlug}',
+    [StorefrontController::class, 'category']
+)
+    ->whereIn('sectionSlug', ['rikaz', 'lujain'])
+    ->name('store.category');
+
+
+Route::get(
+    '/{sectionSlug}',
+    [StorefrontController::class, 'section']
+)
+    ->whereIn('sectionSlug', ['rikaz', 'lujain'])
+    ->name('store.section');
