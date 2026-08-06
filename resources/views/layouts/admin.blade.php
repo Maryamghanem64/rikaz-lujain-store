@@ -24,7 +24,15 @@
     <a href="{{ route('admin.products.index') }}">
         المنتجات
     </a>
-</nav> <div>
+
+    <a href="{{ route('admin.delivery-zones.index') }}">
+        مناطق التوصيل
+    </a>
+    <a href="{{ route('admin.settings.edit') }}">
+        إعدادات المتجر
+    </a>
+</nav>
+ <div>
             <span>{{ auth()->user()->name }}</span>
 
             <form method="POST" action="{{ route('admin.logout') }}">

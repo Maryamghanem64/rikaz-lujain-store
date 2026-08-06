@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductImageController;
+use App\Http\Controllers\Admin\DeliveryZoneController;
+use App\Http\Controllers\Admin\SettingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -49,6 +51,24 @@ Route::delete(
     'products/{product}/images/{image}',
     [ProductImageController::class, 'destroy']
 )->name('products.images.destroy');
+Route::resource(
+    'delivery-zones',
+    DeliveryZoneController::class
+)->only([
+    'index',
+    'store',
+    'update',
+    'destroy',
+]);
+Route::get(
+    'settings',
+    [SettingController::class, 'edit']
+)->name('settings.edit');
+
+Route::put(
+    'settings',
+    [SettingController::class, 'update']
+)->name('settings.update');
         Route::post('/logout', [AuthController::class, 'logout'])
             ->name('logout');
     });
