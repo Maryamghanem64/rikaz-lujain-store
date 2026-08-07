@@ -24,7 +24,9 @@
     <a href="{{ route('admin.products.index') }}">
         المنتجات
     </a>
-
+<a href="{{ route('admin.orders.index') }}">
+    الطلبات
+</a>
     <a href="{{ route('admin.delivery-zones.index') }}">
         مناطق التوصيل
     </a>

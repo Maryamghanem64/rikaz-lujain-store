@@ -1,106 +1,251 @@
 <?php
 
-use App\Http\Controllers\Admin\AuthController;
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\StorefrontController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+
+use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\DeliveryZoneController;
 use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\StorefrontController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PaymentProofController;
+
+
+/*
+|--------------------------------------------------------------------------
+| Admin Authentication
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware('guest')->group(function () {
-    Route::get('/admin/login', [AuthController::class, 'showLogin'])
-        ->name('admin.login');
 
-    Route::post('/admin/login', [AuthController::class, 'login'])
-        ->name('admin.login.submit');
+    Route::get(
+        '/admin/login',
+        [AuthController::class, 'showLogin']
+    )->name('admin.login');
+
+
+    Route::post(
+        '/admin/login',
+        [AuthController::class, 'login']
+    )->name('admin.login.submit');
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard
+        |--------------------------------------------------------------------------
+        */
+
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard');
 
-        Route::resource('categories', CategoryController::class)
-            ->only(['index', 'store', 'update', 'destroy']);
-        Route::resource('products', ProductController::class);Route::resource('products', ProductController::class);
-        Route::post(
-    'products/{product}/images',
-    [ProductImageController::class, 'store']
-)->name('products.images.store');
 
-Route::patch(
-    'products/{product}/images/{image}/primary',
-    [ProductImageController::class, 'setPrimary']
-)->name('products.images.primary');
-
-Route::patch(
-    'products/{product}/images-order',
-    [ProductImageController::class, 'updateOrder']
-)->name('products.images.order');
-
-Route::delete(
-    'products/{product}/images/{image}',
-    [ProductImageController::class, 'destroy']
-)->name('products.images.destroy');
-Route::resource(
-    'delivery-zones',
-    DeliveryZoneController::class
-)->only([
-    'index',
-    'store',
-    'update',
-    'destroy',
-]);
-Route::get(
-    'settings',
-    [SettingController::class, 'edit']
-)->name('settings.edit');
-
-Route::put(
-    'settings',
-    [SettingController::class, 'update']
-)->name('settings.update');
-        Route::post('/logout', [AuthController::class, 'logout'])
-            ->name('logout');
-    });
+        /*
+        |--------------------------------------------------------------------------
+        | Orders
+        |--------------------------------------------------------------------------
+        */
 
         Route::get(
+            'orders',
+            [OrderController::class, 'index']
+        )->name('orders.index');
+
+
+        Route::get(
+            'orders/{order}',
+            [OrderController::class, 'show']
+        )->name('orders.show');
+
+
+        Route::post(
+            'orders/{order}/confirm-cash',
+            [OrderController::class, 'confirmCash']
+        )->name('orders.confirm-cash');
+
+
+        Route::post(
+            'orders/{order}/cancel',
+            [OrderController::class, 'cancel']
+        )->name('orders.cancel');
+
+
+        Route::patch(
+            'orders/{order}/status',
+            [OrderController::class, 'advance']
+        )->name('orders.advance');
+
+
+        Route::post(
+            'orders/{order}/release-reservation',
+            [OrderController::class, 'releaseReservation']
+        )->name('orders.release-reservation');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Whish Payment Proofs
+        |--------------------------------------------------------------------------
+        */
+
+        Route::post(
+            'orders/{order}/payment-proofs/{proof}/verify',
+            [PaymentProofController::class, 'verify']
+        )->name('orders.payment-proofs.verify');
+
+
+        Route::post(
+            'orders/{order}/payment-proofs/{proof}/reject',
+            [PaymentProofController::class, 'reject']
+        )->name('orders.payment-proofs.reject');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Categories
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource(
+            'categories',
+            CategoryController::class
+        )->only([
+            'index',
+            'store',
+            'update',
+            'destroy',
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Products
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource(
+            'products',
+            ProductController::class
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Product Images
+        |--------------------------------------------------------------------------
+        */
+
+        Route::post(
+            'products/{product}/images',
+            [ProductImageController::class, 'store']
+        )->name('products.images.store');
+
+
+        Route::patch(
+            'products/{product}/images/{image}/primary',
+            [ProductImageController::class, 'setPrimary']
+        )->name('products.images.primary');
+
+
+        Route::patch(
+            'products/{product}/images-order',
+            [ProductImageController::class, 'updateOrder']
+        )->name('products.images.order');
+
+
+        Route::delete(
+            'products/{product}/images/{image}',
+            [ProductImageController::class, 'destroy']
+        )->name('products.images.destroy');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delivery Zones
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource(
+            'delivery-zones',
+            DeliveryZoneController::class
+        )->only([
+            'index',
+            'store',
+            'update',
+            'destroy',
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Settings
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            'settings',
+            [SettingController::class, 'edit']
+        )->name('settings.edit');
+
+
+        Route::put(
+            'settings',
+            [SettingController::class, 'update']
+        )->name('settings.update');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Logout
+        |--------------------------------------------------------------------------
+        */
+
+        Route::post(
+            '/logout',
+            [AuthController::class, 'logout']
+        )->name('logout');
+    });
+
+
+/*
+|--------------------------------------------------------------------------
+| Public Store
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
     '/',
     [StorefrontController::class, 'home']
 )->name('store.home');
 
 
-Route::get(
-    '/{sectionSlug}/product/{productSlug}',
-    [StorefrontController::class, 'product']
-)
-    ->whereIn('sectionSlug', ['rikaz', 'lujain'])
-    ->name('store.product');
-
+/*
+|--------------------------------------------------------------------------
+| Cart
+|--------------------------------------------------------------------------
+*/
 
 Route::get(
-    '/{sectionSlug}/{categorySlug}',
-    [StorefrontController::class, 'category']
-)
-    ->whereIn('sectionSlug', ['rikaz', 'lujain'])
-    ->name('store.category');
-
-
-Route::get(
-    '/{sectionSlug}',
-    [StorefrontController::class, 'section']
-)
-    ->whereIn('sectionSlug', ['rikaz', 'lujain'])
-    ->name('store.section');
-    Route::get(
     '/cart',
     [CartController::class, 'index']
 )->name('cart.index');
@@ -128,6 +273,14 @@ Route::delete(
     '/cart',
     [CartController::class, 'clear']
 )->name('cart.clear');
+
+
+/*
+|--------------------------------------------------------------------------
+| Checkout
+|--------------------------------------------------------------------------
+*/
+
 Route::get(
     '/checkout',
     [CheckoutController::class, 'show']
@@ -138,7 +291,39 @@ Route::post(
     '/checkout',
     [CheckoutController::class, 'store']
 )->name('checkout.store');
+
+
 Route::get(
     '/order/{orderNumber}/success',
     [CheckoutController::class, 'success']
 )->name('checkout.success');
+
+
+/*
+|--------------------------------------------------------------------------
+| Storefront Products / Categories / Sections
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/{sectionSlug}/product/{productSlug}',
+    [StorefrontController::class, 'product']
+)
+    ->whereIn('sectionSlug', ['rikaz', 'lujain'])
+    ->name('store.product');
+
+
+Route::get(
+    '/{sectionSlug}/{categorySlug}',
+    [StorefrontController::class, 'category']
+)
+    ->whereIn('sectionSlug', ['rikaz', 'lujain'])
+    ->name('store.category');
+
+
+Route::get(
+    '/{sectionSlug}',
+    [StorefrontController::class, 'section']
+)
+    ->whereIn('sectionSlug', ['rikaz', 'lujain'])
+    ->name('store.section');
