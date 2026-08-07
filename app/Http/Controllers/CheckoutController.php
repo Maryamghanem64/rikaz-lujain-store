@@ -41,7 +41,6 @@ class CheckoutController extends Controller
         ]);
     }
 
-
     public function store(
         Request $request,
         OrderService $orderService,
@@ -74,11 +73,10 @@ class CheckoutController extends Controller
                     'delivery_zones',
                     'id'
                 )->where(
-                    fn ($query) =>
-                        $query->where(
-                            'is_active',
-                            true
-                        )
+                    fn ($query) => $query->where(
+                        'is_active',
+                        true
+                    )
                 ),
             ],
 
@@ -145,7 +143,6 @@ class CheckoutController extends Controller
             $order->order_number
         );
     }
-
 
     public function success(
         string $orderNumber

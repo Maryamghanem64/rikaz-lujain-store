@@ -10,12 +10,10 @@ class CartService
 {
     private string $sessionKey = 'cart';
 
-
     public function raw(): array
     {
         return session()->get($this->sessionKey, []);
     }
-
 
     public function items(): Collection
     {
@@ -30,6 +28,7 @@ class CartService
                 'category.section',
                 'primaryImage',
             ])
+            ->storefrontAvailable()
             ->whereIn('id', array_keys($cart))
             ->get()
             ->keyBy('id');
@@ -39,7 +38,7 @@ class CartService
 
                 $product = $products->get((int) $productId);
 
-                if (! $product || ! $product->is_active) {
+                if (! $product) {
                     return null;
                 }
 
@@ -50,33 +49,28 @@ class CartService
 
                     'quantity' => $quantity,
 
-                    'unit_price' =>
-                        (float) $product->price,
+                    'unit_price' => (float) $product->price,
 
-                    'subtotal' =>
-                        (float) $product->price * $quantity,
+                    'subtotal' => (float) $product->price * $quantity,
                 ];
             })
             ->filter()
             ->values();
     }
 
-
     public function add(
         Product $product,
         int $quantity = 1
     ): void {
-        if (! $product->is_active) {
+        if (! $product->isAvailableOnStorefront()) {
             throw ValidationException::withMessages([
-                'quantity' =>
-                    'هذا المنتج غير متاح حاليًا.',
+                'quantity' => 'هذا المنتج غير متاح حاليًا.',
             ]);
         }
 
         if ($quantity < 1) {
             throw ValidationException::withMessages([
-                'quantity' =>
-                    'يجب أن تكون الكمية واحدًا على الأقل.',
+                'quantity' => 'يجب أن تكون الكمية واحدًا على الأقل.',
             ]);
         }
 
@@ -93,8 +87,7 @@ class CartService
             $product->available_quantity
         ) {
             throw ValidationException::withMessages([
-                'quantity' =>
-                    'الكمية المطلوبة غير متوفرة.',
+                'quantity' => 'الكمية المطلوبة غير متوفرة.',
             ]);
         }
 
@@ -106,24 +99,21 @@ class CartService
         );
     }
 
-
     public function update(
         Product $product,
         int $quantity
     ): void {
         if ($quantity < 1) {
             throw ValidationException::withMessages([
-                'quantity' =>
-                    'يجب أن تكون الكمية واحدًا على الأقل.',
+                'quantity' => 'يجب أن تكون الكمية واحدًا على الأقل.',
             ]);
         }
 
         $product->refresh();
 
-        if (! $product->is_active) {
+        if (! $product->isAvailableOnStorefront()) {
             throw ValidationException::withMessages([
-                'quantity' =>
-                    'هذا المنتج لم يعد متاحًا.',
+                'quantity' => 'هذا المنتج لم يعد متاحًا.',
             ]);
         }
 
@@ -132,8 +122,7 @@ class CartService
             $product->available_quantity
         ) {
             throw ValidationException::withMessages([
-                'quantity' =>
-                    'الكمية المطلوبة أكبر من الكمية المتوفرة.',
+                'quantity' => 'الكمية المطلوبة أكبر من الكمية المتوفرة.',
             ]);
         }
 
@@ -151,7 +140,6 @@ class CartService
         );
     }
 
-
     public function remove(Product $product): void
     {
         $cart = $this->raw();
@@ -164,7 +152,6 @@ class CartService
         );
     }
 
-
     public function clear(): void
     {
         session()->forget(
@@ -172,20 +159,17 @@ class CartService
         );
     }
 
-
     public function subtotal(): float
     {
         return $this->items()
             ->sum('subtotal');
     }
 
-
     public function count(): int
     {
         return collect($this->raw())
             ->sum();
     }
-
 
     public function isEmpty(): bool
     {

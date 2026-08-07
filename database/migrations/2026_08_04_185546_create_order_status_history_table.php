@@ -10,34 +10,34 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::create('order_status_history', function (Blueprint $table) {
-        $table->id();
+    {
+        Schema::create('order_status_history', function (Blueprint $table) {
+            $table->id();
 
-        $table->foreignId('order_id')
-            ->constrained()
-            ->cascadeOnDelete();
+            $table->foreignId('order_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
-        $table->string('status');
+            $table->string('status');
 
-        $table->foreignId('changed_by')
-            ->nullable()
-            ->constrained('users')
-            ->nullOnDelete();
+            $table->foreignId('changed_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
 
-        $table->text('note')->nullable();
-        $table->timestamp('created_at')->useCurrent();
+            $table->text('note')->nullable();
+            $table->timestamp('created_at')->useCurrent();
 
-        $table->index(['order_id', 'created_at']);
-        $table->index('status');
-    });
-}
+            $table->index(['order_id', 'created_at']);
+            $table->index('status');
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
-{
-    Schema::dropIfExists('order_status_history');
-}
+    {
+        Schema::dropIfExists('order_status_history');
+    }
 };

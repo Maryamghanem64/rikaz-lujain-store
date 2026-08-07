@@ -18,40 +18,41 @@ class DeliveryZoneController extends Controller
 
         return view('admin.delivery-zones.index', compact('zones'));
     }
-public function store(Request $request): RedirectResponse
-{
-    $validated = $request->validate([
-        'name_ar' => [
-            'required',
-            'string',
-            'max:255',
-        ],
 
-        'fee' => [
-            'required',
-            'numeric',
-            'min:0',
-        ],
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name_ar' => [
+                'required',
+                'string',
+                'max:255',
+            ],
 
-        'sort_order' => [
-            'nullable',
-            'integer',
-            'min:0',
-        ],
-    ]);
+            'fee' => [
+                'required',
+                'numeric',
+                'min:0',
+            ],
 
-    $validated['is_active'] = $request->boolean('is_active');
+            'sort_order' => [
+                'nullable',
+                'integer',
+                'min:0',
+            ],
+        ]);
 
-    $validated['sort_order'] =
-        $validated['sort_order'] ?? 0;
+        $validated['is_active'] = $request->boolean('is_active');
 
-    DeliveryZone::create($validated);
+        $validated['sort_order'] =
+            $validated['sort_order'] ?? 0;
 
-    return back()->with(
-        'success',
-        'تمت إضافة منطقة التوصيل بنجاح.'
-    );
-}
+        DeliveryZone::create($validated);
+
+        return back()->with(
+            'success',
+            'تمت إضافة منطقة التوصيل بنجاح.'
+        );
+    }
     // public function store(Request $request): RedirectResponse
     // {
     //     $validated = $request->validate([
@@ -88,7 +89,7 @@ public function store(Request $request): RedirectResponse
     //     );
     // }
 
-public function update(
+    public function update(
         Request $request,
         DeliveryZone $deliveryZone
     ): RedirectResponse {

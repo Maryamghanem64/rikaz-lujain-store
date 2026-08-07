@@ -12,8 +12,7 @@ class PaymentProofService
 {
     public function __construct(
         private InventoryService $inventoryService
-    ) {
-    }
+    ) {}
 
     public function verify(
         Order $order,
@@ -37,15 +36,13 @@ class PaymentProofService
 
             if ($lockedProof->order_id !== $lockedOrder->id) {
                 throw ValidationException::withMessages([
-                    'payment_proof' =>
-                        'إثبات الدفع لا يعود لهذا الطلب.',
+                    'payment_proof' => 'إثبات الدفع لا يعود لهذا الطلب.',
                 ]);
             }
 
             if ($lockedOrder->payment_method !== 'whish') {
                 throw ValidationException::withMessages([
-                    'payment' =>
-                        'هذا الطلب لا يستخدم Whish Money.',
+                    'payment' => 'هذا الطلب لا يستخدم Whish Money.',
                 ]);
             }
 
@@ -76,15 +73,13 @@ class PaymentProofService
                 'awaiting_payment_verification'
             ) {
                 throw ValidationException::withMessages([
-                    'status' =>
-                        'حالة الطلب لا تسمح بالتحقق من الدفع.',
+                    'status' => 'حالة الطلب لا تسمح بالتحقق من الدفع.',
                 ]);
             }
 
             if ($lockedProof->review_status !== 'pending') {
                 throw ValidationException::withMessages([
-                    'payment_proof' =>
-                        'تمت مراجعة هذا الإيصال مسبقًا.',
+                    'payment_proof' => 'تمت مراجعة هذا الإيصال مسبقًا.',
                 ]);
             }
 
@@ -112,8 +107,7 @@ class PaymentProofService
             $lockedOrder->statusHistory()->create([
                 'status' => 'confirmed',
                 'changed_by' => $admin->id,
-                'note' =>
-                    'تم التحقق من وصول دفعة Whish وتأكيد الطلب.',
+                'note' => 'تم التحقق من وصول دفعة Whish وتأكيد الطلب.',
             ]);
 
             return $lockedOrder->load([
@@ -123,7 +117,6 @@ class PaymentProofService
             ]);
         });
     }
-
 
     public function reject(
         Order $order,
@@ -149,15 +142,13 @@ class PaymentProofService
 
             if ($lockedProof->order_id !== $lockedOrder->id) {
                 throw ValidationException::withMessages([
-                    'payment_proof' =>
-                        'إثبات الدفع لا يعود لهذا الطلب.',
+                    'payment_proof' => 'إثبات الدفع لا يعود لهذا الطلب.',
                 ]);
             }
 
             if ($lockedOrder->payment_method !== 'whish') {
                 throw ValidationException::withMessages([
-                    'payment' =>
-                        'هذا الطلب لا يستخدم Whish Money.',
+                    'payment' => 'هذا الطلب لا يستخدم Whish Money.',
                 ]);
             }
 
@@ -177,15 +168,13 @@ class PaymentProofService
                 'awaiting_payment_verification'
             ) {
                 throw ValidationException::withMessages([
-                    'status' =>
-                        'حالة الطلب لا تسمح برفض الإيصال.',
+                    'status' => 'حالة الطلب لا تسمح برفض الإيصال.',
                 ]);
             }
 
             if ($lockedProof->review_status !== 'pending') {
                 throw ValidationException::withMessages([
-                    'payment_proof' =>
-                        'تمت مراجعة هذا الإيصال مسبقًا.',
+                    'payment_proof' => 'تمت مراجعة هذا الإيصال مسبقًا.',
                 ]);
             }
 
@@ -204,8 +193,7 @@ class PaymentProofService
             $lockedOrder->statusHistory()->create([
                 'status' => 'payment_rejected',
                 'changed_by' => $admin->id,
-                'note' =>
-                    'تم رفض إثبات الدفع. السبب: ' .
+                'note' => 'تم رفض إثبات الدفع. السبب: '.
                     $reason,
             ]);
 

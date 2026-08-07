@@ -60,12 +60,10 @@ class DashboardController extends Controller
                 ->count(),
         ];
 
-
         $recentOrders = Order::query()
             ->latest()
             ->take(8)
             ->get();
-
 
         $lowStockProducts = Product::query()
             ->with([
@@ -81,7 +79,6 @@ class DashboardController extends Controller
             )
             ->take(8)
             ->get();
-
 
         return view(
             'admin.dashboard',

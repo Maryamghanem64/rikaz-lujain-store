@@ -10,37 +10,38 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::create('payment_proofs', function (Blueprint $table) {
-        $table->id();
+    {
+        Schema::create('payment_proofs', function (Blueprint $table) {
+            $table->id();
 
-        $table->foreignId('order_id')
-            ->constrained()
-            ->cascadeOnDelete();
+            $table->foreignId('order_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
-        $table->text('url');
-        $table->string('public_id')->nullable();
+            $table->text('url');
+            $table->string('public_id')->nullable();
 
-        $table->string('review_status')->default('pending');
+            $table->string('review_status')->default('pending');
 
-        $table->foreignId('reviewed_by')
-            ->nullable()
-            ->constrained('users')
-            ->nullOnDelete();
+            $table->foreignId('reviewed_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
 
-        $table->timestamp('reviewed_at')->nullable();
-        $table->text('rejection_reason')->nullable();
+            $table->timestamp('reviewed_at')->nullable();
+            $table->text('rejection_reason')->nullable();
 
-        $table->timestamps();
+            $table->timestamps();
 
-        $table->index(['order_id', 'review_status']);
-    });
-}
+            $table->index(['order_id', 'review_status']);
+        });
+    }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
-{
-    Schema::dropIfExists('payment_proofs');
-}
+    {
+        Schema::dropIfExists('payment_proofs');
+    }
 };

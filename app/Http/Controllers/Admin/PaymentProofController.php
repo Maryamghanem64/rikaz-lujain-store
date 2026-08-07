@@ -30,7 +30,6 @@ class PaymentProofController extends Controller
         );
     }
 
-
     public function reject(
         Request $request,
         Order $order,

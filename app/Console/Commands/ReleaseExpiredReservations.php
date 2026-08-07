@@ -14,7 +14,6 @@ class ReleaseExpiredReservations extends Command
     protected $description =
         'Release expired order reservations and cancel pending orders.';
 
-
     public function handle(
         InventoryService $inventoryService
     ): int {
@@ -32,7 +31,6 @@ class ReleaseExpiredReservations extends Command
             )
             ->pluck('id');
 
-
         if ($orderIds->isEmpty()) {
             $this->info(
                 'No expired reservations found.'
@@ -41,9 +39,7 @@ class ReleaseExpiredReservations extends Command
             return self::SUCCESS;
         }
 
-
         $released = 0;
-
 
         foreach ($orderIds as $orderId) {
 
@@ -64,11 +60,9 @@ class ReleaseExpiredReservations extends Command
                     ->lockForUpdate()
                     ->first();
 
-
                 if (! $order) {
                     return;
                 }
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -90,7 +84,6 @@ class ReleaseExpiredReservations extends Command
                     return;
                 }
 
-
                 /*
                 |--------------------------------------------------------------------------
                 | Re-check deadline
@@ -104,7 +97,6 @@ class ReleaseExpiredReservations extends Command
                     return;
                 }
 
-
                 /*
                 |--------------------------------------------------------------------------
                 | Release reserved stock
@@ -113,7 +105,6 @@ class ReleaseExpiredReservations extends Command
 
                 $inventoryService
                     ->releaseReservation($order);
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -126,7 +117,6 @@ class ReleaseExpiredReservations extends Command
                     'reservation_expires_at' => null,
                 ]);
 
-
                 /*
                 |--------------------------------------------------------------------------
                 | Audit history
@@ -136,15 +126,12 @@ class ReleaseExpiredReservations extends Command
                 $order->statusHistory()->create([
                     'status' => 'cancelled',
                     'changed_by' => null,
-                    'note' =>
-                        'تم إلغاء الطلب تلقائيًا لانتهاء مهلة حجز المنتجات.',
+                    'note' => 'تم إلغاء الطلب تلقائيًا لانتهاء مهلة حجز المنتجات.',
                 ]);
-
 
                 $released++;
             });
         }
-
 
         $this->info(
             "Released {$released} expired reservation(s)."

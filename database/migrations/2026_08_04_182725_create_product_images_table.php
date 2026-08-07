@@ -9,33 +9,33 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
-{
-    Schema::create('product_images', function (Blueprint $table) {
-        $table->id();
+    public function up(): void
+    {
+        Schema::create('product_images', function (Blueprint $table) {
+            $table->id();
 
-        $table->foreignId('product_id')
-            ->constrained()
-            ->cascadeOnDelete();
+            $table->foreignId('product_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
-        $table->text('url');
-        $table->string('public_id')->nullable();
+            $table->text('url');
+            $table->string('public_id')->nullable();
 
-        $table->boolean('is_primary')->default(false);
-        $table->unsignedSmallInteger('sort_order')->default(0);
+            $table->boolean('is_primary')->default(false);
+            $table->unsignedSmallInteger('sort_order')->default(0);
 
-        $table->timestamps();
+            $table->timestamps();
 
-        $table->index(['product_id', 'is_primary']);
-        $table->index(['product_id', 'sort_order']);
-    });
-}
+            $table->index(['product_id', 'is_primary']);
+            $table->index(['product_id', 'sort_order']);
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
-{
-    Schema::dropIfExists('product_images');
-}
+    {
+        Schema::dropIfExists('product_images');
+    }
 };

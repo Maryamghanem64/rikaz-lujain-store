@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\StoreProductRequest;
 use App\Http\Requests\Admin\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
+use App\Services\ImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -15,9 +16,9 @@ class ProductController extends Controller
     public function index(): View
     {
         $products = Product::with([
-                'category.section',
-                'primaryImage',
-            ])
+            'category.section',
+            'primaryImage',
+        ])
             ->latest()
             ->paginate(20);
 
@@ -64,19 +65,6 @@ class ProductController extends Controller
             );
     }
 
-    public function show(Product $product): View
-    {
-        $product->load([
-            'category.section',
-            'images',
-        ]);
-
-        return view(
-            'admin.products.show',
-            compact('product')
-        );
-    }
-
     public function edit(Product $product): View
     {
         $categories = Category::with('section')
@@ -114,7 +102,8 @@ class ProductController extends Controller
     }
 
     public function destroy(
-        Product $product
+        Product $product,
+        ImageService $imageService
     ): RedirectResponse {
         if ($product->orderItems()->exists()) {
             $product->update([
@@ -127,7 +116,14 @@ class ProductController extends Controller
             );
         }
 
+        $imagePublicIds = $product->images()
+            ->pluck('public_id');
+
         $product->delete();
+
+        $imagePublicIds->each(
+            fn (?string $publicId) => $imageService->delete($publicId)
+        );
 
         return redirect()
             ->route('admin.products.index')

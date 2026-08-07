@@ -17,8 +17,7 @@ class OrderService
     public function __construct(
         private CartService $cart,
         private ImageService $imageService
-    ) {
-    }
+    ) {}
 
     public function create(array $data): Order
     {
@@ -28,14 +27,15 @@ class OrderService
         |--------------------------------------------------------------------------
         */
 
-        $cartItems = $this->cart->items();
+        $cartItems = $this->cart->items()
+            ->sortBy(fn (array $item) => $item['product']->id)
+            ->values();
 
         if ($cartItems->isEmpty()) {
             throw ValidationException::withMessages([
                 'cart' => 'سلة التسوق فارغة.',
             ]);
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -50,11 +50,9 @@ class OrderService
 
         if (! $deliveryZone) {
             throw ValidationException::withMessages([
-                'delivery_zone_id' =>
-                    'منطقة التوصيل المختارة غير متاحة.',
+                'delivery_zone_id' => 'منطقة التوصيل المختارة غير متاحة.',
             ]);
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -67,7 +65,6 @@ class OrderService
         $reservationHours = (int) (
             $settings?->reservation_hours ?? 24
         );
-
 
         /*
         |--------------------------------------------------------------------------
@@ -82,8 +79,7 @@ class OrderService
 
             if (! $proof instanceof UploadedFile) {
                 throw ValidationException::withMessages([
-                    'payment_proof' =>
-                        'يجب رفع إيصال تحويل Whish.',
+                    'payment_proof' => 'يجب رفع إيصال تحويل Whish.',
                 ]);
             }
 
@@ -91,7 +87,6 @@ class OrderService
                 $this->imageService
                     ->uploadPaymentProof($proof);
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -108,10 +103,21 @@ class OrderService
                 $uploadedProof
             ) {
 
+                $deliveryZone = DeliveryZone::query()
+                    ->whereKey($deliveryZone->id)
+                    ->where('is_active', true)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $deliveryZone) {
+                    throw ValidationException::withMessages([
+                        'delivery_zone_id' => 'منطقة التوصيل المختارة لم تعد متاحة.',
+                    ]);
+                }
+
                 $subtotal = 0;
 
                 $preparedItems = [];
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -121,6 +127,7 @@ class OrderService
 
                 foreach ($cartItems as $cartItem) {
                     $product = Product::query()
+                        ->storefrontAvailable()
                         ->whereKey(
                             $cartItem['product']->id
                         )
@@ -128,12 +135,10 @@ class OrderService
                         ->first();
 
                     if (
-                        ! $product ||
-                        ! $product->is_active
+                        ! $product
                     ) {
                         throw ValidationException::withMessages([
-                            'cart' =>
-                                'أحد المنتجات لم يعد متاحًا.',
+                            'cart' => 'أحد المنتجات لم يعد متاحًا.',
                         ]);
                     }
 
@@ -141,8 +146,7 @@ class OrderService
 
                     if ($quantity < 1) {
                         throw ValidationException::withMessages([
-                            'cart' =>
-                                'الكمية المطلوبة غير صحيحة.',
+                            'cart' => 'الكمية المطلوبة غير صحيحة.',
                         ]);
                     }
 
@@ -151,11 +155,9 @@ class OrderService
                         $product->available_quantity
                     ) {
                         throw ValidationException::withMessages([
-                            'cart' =>
-                                "الكمية المطلوبة من {$product->name_ar} لم تعد متوفرة.",
+                            'cart' => "الكمية المطلوبة من {$product->name_ar} لم تعد متوفرة.",
                         ]);
                     }
-
 
                     /*
                     |--------------------------------------------------------------------------
@@ -170,22 +172,16 @@ class OrderService
 
                     $subtotal += $itemSubtotal;
 
-
                     $preparedItems[] = [
-                        'product' =>
-                            $product,
+                        'product' => $product,
 
-                        'quantity' =>
-                            $quantity,
+                        'quantity' => $quantity,
 
-                        'unit_price' =>
-                            $unitPrice,
+                        'unit_price' => $unitPrice,
 
-                        'subtotal' =>
-                            $itemSubtotal,
+                        'subtotal' => $itemSubtotal,
                     ];
                 }
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -198,7 +194,6 @@ class OrderService
 
                 $total =
                     $subtotal + $deliveryFee;
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -217,7 +212,6 @@ class OrderService
                     ? 'pending_verification'
                     : 'cash_pending';
 
-
                 /*
                 |--------------------------------------------------------------------------
                 | 9. Create order
@@ -225,61 +219,45 @@ class OrderService
                 */
 
                 $order = Order::create([
-                    'order_number' =>
-                        $this->generateOrderNumber(),
+                    'order_number' => $this->generateOrderNumber(),
 
-                    'customer_name' =>
-                        $data['customer_name'],
+                    'customer_name' => $data['customer_name'],
 
-                    'customer_phone' =>
-                        $data['customer_phone'],
+                    'customer_phone' => $data['customer_phone'],
 
-                    'customer_whatsapp' =>
-                        $data['customer_whatsapp'] ?? null,
+                    'customer_whatsapp' => $data['customer_whatsapp'] ?? null,
 
-                    'delivery_zone_id' =>
-                        $deliveryZone->id,
+                    'delivery_zone_id' => $deliveryZone->id,
 
                     /*
                      * Snapshot because delivery zones
                      * may change later.
                      */
-                    'delivery_zone_name' =>
-                        $deliveryZone->name_ar,
+                    'delivery_zone_name' => $deliveryZone->name_ar,
 
-                    'address' =>
-                        $data['address'],
+                    'address' => $data['address'],
 
-                    'notes' =>
-                        $data['notes'] ?? null,
+                    'notes' => $data['notes'] ?? null,
 
-                    'subtotal' =>
-                        $subtotal,
+                    'subtotal' => $subtotal,
 
                     /*
                      * Snapshot of current delivery fee.
                      */
-                    'delivery_fee' =>
-                        $deliveryFee,
+                    'delivery_fee' => $deliveryFee,
 
-                    'total' =>
-                        $total,
+                    'total' => $total,
 
-                    'payment_method' =>
-                        $data['payment_method'],
+                    'payment_method' => $data['payment_method'],
 
-                    'payment_status' =>
-                        $paymentStatus,
+                    'payment_status' => $paymentStatus,
 
-                    'status' =>
-                        $status,
+                    'status' => $status,
 
-                    'reservation_expires_at' =>
-                        now()->addHours(
-                            $reservationHours
-                        ),
+                    'reservation_expires_at' => now()->addHours(
+                        $reservationHours
+                    ),
                 ]);
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -289,17 +267,13 @@ class OrderService
 
                 if ($uploadedProof) {
                     $order->paymentProofs()->create([
-                        'url' =>
-                            $uploadedProof['url'],
+                        'url' => $uploadedProof['url'],
 
-                        'public_id' =>
-                            $uploadedProof['public_id'],
+                        'public_id' => $uploadedProof['public_id'],
 
-                        'review_status' =>
-                            'pending',
+                        'review_status' => 'pending',
                     ]);
                 }
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -311,39 +285,28 @@ class OrderService
                     /** @var Product $product */
                     $product = $item['product'];
 
-
                     /*
                      * Store product snapshot.
                      */
                     $order->items()->create([
-                        'product_id' =>
-                            $product->id,
+                        'product_id' => $product->id,
 
-                        'product_name_ar' =>
-                            $product->name_ar,
+                        'product_name_ar' => $product->name_ar,
 
-                        'stone_name' =>
-                            $product->stone_name,
+                        'stone_name' => $product->stone_name,
 
-                        'stone_weight' =>
-                            $product->stone_weight,
+                        'stone_weight' => $product->stone_weight,
 
-                        'silver_purity' =>
-                            $product->silver_purity,
+                        'silver_purity' => $product->silver_purity,
 
-                        'size' =>
-                            $product->size,
+                        'size' => $product->size,
 
-                        'unit_price' =>
-                            $item['unit_price'],
+                        'unit_price' => $item['unit_price'],
 
-                        'quantity' =>
-                            $item['quantity'],
+                        'quantity' => $item['quantity'],
 
-                        'subtotal' =>
-                            $item['subtotal'],
+                        'subtotal' => $item['subtotal'],
                     ]);
-
 
                     /*
                      * Reserve product quantity.
@@ -357,7 +320,6 @@ class OrderService
                     );
                 }
 
-
                 /*
                 |--------------------------------------------------------------------------
                 | 12. First status history entry
@@ -365,16 +327,12 @@ class OrderService
                 */
 
                 $order->statusHistory()->create([
-                    'status' =>
-                        $status,
+                    'status' => $status,
 
-                    'changed_by' =>
-                        null,
+                    'changed_by' => null,
 
-                    'note' =>
-                        'تم إنشاء الطلب من المتجر.',
+                    'note' => 'تم إنشاء الطلب من المتجر.',
                 ]);
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -408,7 +366,6 @@ class OrderService
         }
     }
 
-
     /*
     |--------------------------------------------------------------------------
     | Generate unique order number
@@ -419,9 +376,9 @@ class OrderService
     {
         do {
             $number =
-                'RL-' .
-                now()->format('ymd') .
-                '-' .
+                'RL-'.
+                now()->format('ymd').
+                '-'.
                 strtoupper(
                     Str::random(6)
                 );

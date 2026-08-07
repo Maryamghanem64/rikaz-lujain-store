@@ -11,9 +11,7 @@ class OrderWorkflowService
 {
     public function __construct(
         private InventoryService $inventoryService
-    ) {
-    }
-
+    ) {}
 
     /*
     |--------------------------------------------------------------------------
@@ -38,8 +36,7 @@ class OrderWorkflowService
 
             if ($lockedOrder->payment_method !== 'cash') {
                 throw ValidationException::withMessages([
-                    'payment' =>
-                        'هذا الطلب ليس طلب دفع نقدي.',
+                    'payment' => 'هذا الطلب ليس طلب دفع نقدي.',
                 ]);
             }
 
@@ -63,8 +60,7 @@ class OrderWorkflowService
 
             if ($lockedOrder->status !== 'new_cash') {
                 throw ValidationException::withMessages([
-                    'status' =>
-                        'لا يمكن تأكيد الطلب من حالته الحالية.',
+                    'status' => 'لا يمكن تأكيد الطلب من حالته الحالية.',
                 ]);
             }
 
@@ -81,8 +77,7 @@ class OrderWorkflowService
             $lockedOrder->statusHistory()->create([
                 'status' => 'confirmed',
                 'changed_by' => $admin->id,
-                'note' =>
-                    $note ?: 'تم تأكيد الطلب النقدي.',
+                'note' => $note ?: 'تم تأكيد الطلب النقدي.',
             ]);
 
             return $lockedOrder->load([
@@ -91,7 +86,6 @@ class OrderWorkflowService
             ]);
         });
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -135,11 +129,9 @@ class OrderWorkflowService
                 )
             ) {
                 throw ValidationException::withMessages([
-                    'status' =>
-                        'لا يمكن إلغاء طلب تم شحنه أو تسليمه.',
+                    'status' => 'لا يمكن إلغاء طلب تم شحنه أو تسليمه.',
                 ]);
             }
-
 
             /*
              * Pending orders:
@@ -163,7 +155,6 @@ class OrderWorkflowService
                     );
             }
 
-
             /*
              * Confirmed sale:
              * stock was already deducted,
@@ -183,12 +174,9 @@ class OrderWorkflowService
                     ->restoreSale(
                         $lockedOrder
                     );
-            }
-
-            else {
+            } else {
                 throw ValidationException::withMessages([
-                    'status' =>
-                        'لا يمكن إلغاء الطلب من حالته الحالية.',
+                    'status' => 'لا يمكن إلغاء الطلب من حالته الحالية.',
                 ]);
             }
 
@@ -200,8 +188,7 @@ class OrderWorkflowService
             $lockedOrder->statusHistory()->create([
                 'status' => 'cancelled',
                 'changed_by' => $admin->id,
-                'note' =>
-                    $note ?: 'تم إلغاء الطلب.',
+                'note' => $note ?: 'تم إلغاء الطلب.',
             ]);
 
             return $lockedOrder->load([
@@ -211,6 +198,62 @@ class OrderWorkflowService
         });
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Manually release a pending reservation
+    |--------------------------------------------------------------------------
+    */
+
+    public function releasePendingReservation(
+        Order $order,
+        User $admin,
+        ?string $note = null
+    ): Order {
+        return DB::transaction(function () use (
+            $order,
+            $admin,
+            $note
+        ) {
+            $lockedOrder = Order::query()
+                ->whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($lockedOrder->status === 'cancelled') {
+                return $lockedOrder;
+            }
+
+            if (! in_array($lockedOrder->status, [
+                'new_cash',
+                'awaiting_payment_verification',
+                'payment_rejected',
+            ], true)) {
+                throw ValidationException::withMessages([
+                    'status' => 'يمكن تحرير الحجز يدويًا للطلبات المعلقة فقط.',
+                ]);
+            }
+
+            $this->inventoryService
+                ->releaseReservation($lockedOrder);
+
+            $lockedOrder->update([
+                'status' => 'cancelled',
+                'reservation_expires_at' => null,
+            ]);
+
+            $lockedOrder->statusHistory()->create([
+                'status' => 'cancelled',
+                'changed_by' => $admin->id,
+                'note' => $note ?:
+                    'تم تحرير حجز المنتجات يدويًا من لوحة الإدارة وإلغاء الطلب.',
+            ]);
+
+            return $lockedOrder->load([
+                'items',
+                'statusHistory',
+            ]);
+        });
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -255,29 +298,27 @@ class OrderWorkflowService
 
             if ($expectedTarget !== $targetStatus) {
                 throw ValidationException::withMessages([
-                    'status' =>
-                        'هذا الانتقال بين حالات الطلب غير مسموح.',
+                    'status' => 'هذا الانتقال بين حالات الطلب غير مسموح.',
                 ]);
             }
 
-           $updateData = [
-    'status' => $targetStatus,
-];
+            $updateData = [
+                'status' => $targetStatus,
+            ];
 
-if (
-    $targetStatus === 'delivered' &&
-    $lockedOrder->payment_method === 'cash'
-) {
-    $updateData['payment_status'] = 'paid_on_delivery';
-}
+            if (
+                $targetStatus === 'delivered' &&
+                $lockedOrder->payment_method === 'cash'
+            ) {
+                $updateData['payment_status'] = 'paid_on_delivery';
+            }
 
-$lockedOrder->update($updateData);
+            $lockedOrder->update($updateData);
 
             $lockedOrder->statusHistory()->create([
                 'status' => $targetStatus,
                 'changed_by' => $admin->id,
-                'note' =>
-                    $note ?: 'تم تحديث حالة الطلب.',
+                'note' => $note ?: 'تم تحديث حالة الطلب.',
             ]);
 
             return $lockedOrder->load(

@@ -30,8 +30,7 @@ class InventoryService
 
             if (! $item->product_id) {
                 throw ValidationException::withMessages([
-                    'inventory' =>
-                        'تعذر العثور على أحد المنتجات المرتبطة بالطلب.',
+                    'inventory' => 'تعذر العثور على أحد المنتجات المرتبطة بالطلب.',
                 ]);
             }
 
@@ -42,8 +41,7 @@ class InventoryService
 
             if (! $product) {
                 throw ValidationException::withMessages([
-                    'inventory' =>
-                        "المنتج {$item->product_name_ar} غير موجود.",
+                    'inventory' => "المنتج {$item->product_name_ar} غير موجود.",
                 ]);
             }
 
@@ -54,8 +52,7 @@ class InventoryService
                 $quantity
             ) {
                 throw ValidationException::withMessages([
-                    'inventory' =>
-                        "الكمية المحجوزة للمنتج {$item->product_name_ar} غير صحيحة.",
+                    'inventory' => "الكمية المحجوزة للمنتج {$item->product_name_ar} غير صحيحة.",
                 ]);
             }
 
@@ -64,8 +61,7 @@ class InventoryService
                 $quantity
             ) {
                 throw ValidationException::withMessages([
-                    'inventory' =>
-                        "المخزون الفعلي للمنتج {$item->product_name_ar} غير كافٍ.",
+                    'inventory' => "المخزون الفعلي للمنتج {$item->product_name_ar} غير كافٍ.",
                 ]);
             }
 
@@ -80,7 +76,6 @@ class InventoryService
             );
         }
     }
-
 
     /**
      * Release a pending reservation.
@@ -117,7 +112,6 @@ class InventoryService
 
             $quantity = (int) $item->quantity;
 
-
             /*
              * If reservation was already released,
              * don't make reserved_quantity negative.
@@ -135,7 +129,6 @@ class InventoryService
             );
         }
     }
-
 
     /**
      * Restore stock if an already confirmed sale

@@ -22,20 +22,18 @@ class OrderController extends Controller
 
             ->when(
                 $request->filled('status'),
-                fn ($query) =>
-                    $query->where(
-                        'status',
-                        $request->string('status')->toString()
-                    )
+                fn ($query) => $query->where(
+                    'status',
+                    $request->string('status')->toString()
+                )
             )
 
             ->when(
                 $request->filled('payment_method'),
-                fn ($query) =>
-                    $query->where(
-                        'payment_method',
-                        $request->string('payment_method')->toString()
-                    )
+                fn ($query) => $query->where(
+                    'payment_method',
+                    $request->string('payment_method')->toString()
+                )
             )
 
             ->when(
@@ -77,7 +75,6 @@ class OrderController extends Controller
         );
     }
 
-
     public function show(Order $order): View
     {
         $order->load([
@@ -92,7 +89,6 @@ class OrderController extends Controller
             compact('order')
         );
     }
-
 
     public function confirmCash(
         Request $request,
@@ -120,7 +116,6 @@ class OrderController extends Controller
         );
     }
 
-
     public function cancel(
         Request $request,
         Order $order,
@@ -146,7 +141,6 @@ class OrderController extends Controller
             'تم إلغاء الطلب بنجاح.'
         );
     }
-
 
     public function advance(
         Request $request,
@@ -184,7 +178,6 @@ class OrderController extends Controller
         );
     }
 
-
     public function releaseReservation(
         Request $request,
         Order $order,
@@ -202,7 +195,7 @@ class OrderController extends Controller
         $note = $validated['note']
             ?? 'تم تحرير حجز المنتجات يدويًا من لوحة الإدارة.';
 
-        $workflow->cancel(
+        $workflow->releasePendingReservation(
             $order,
             $request->user(),
             $note

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+
 #[Fillable([
     'order_number',
     'customer_name',
@@ -50,19 +51,20 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
     public function paymentProofs(): HasMany
-{
-    return $this->hasMany(PaymentProof::class);
-}
+    {
+        return $this->hasMany(PaymentProof::class);
+    }
 
-public function latestPaymentProof(): HasOne
-{
-    return $this->hasOne(PaymentProof::class)->latestOfMany();
-}
+    public function latestPaymentProof(): HasOne
+    {
+        return $this->hasOne(PaymentProof::class)->latestOfMany();
+    }
 
-public function statusHistory(): HasMany
-{
-    return $this->hasMany(OrderStatusHistory::class)
-        ->orderBy('created_at');
-}
+    public function statusHistory(): HasMany
+    {
+        return $this->hasMany(OrderStatusHistory::class)
+            ->orderBy('created_at');
+    }
 }

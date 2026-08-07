@@ -10,32 +10,32 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::create('categories', function (Blueprint $table) {
-        $table->id();
+    {
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
 
-        $table->foreignId('section_id')
-            ->constrained()
-            ->restrictOnDelete();
+            $table->foreignId('section_id')
+                ->constrained()
+                ->restrictOnDelete();
 
-        $table->string('name_ar');
-        $table->string('slug');
+            $table->string('name_ar');
+            $table->string('slug');
 
-        $table->string('image_path')->nullable();
-        $table->unsignedSmallInteger('sort_order')->default(0);
-        $table->boolean('is_active')->default(true);
+            $table->string('image_path')->nullable();
+            $table->unsignedSmallInteger('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
 
-        $table->timestamps();
+            $table->timestamps();
 
-        $table->unique(['section_id', 'slug']);
-    });
-}
+            $table->unique(['section_id', 'slug']);
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
-{
-    Schema::dropIfExists('categories');
-}
+    {
+        Schema::dropIfExists('categories');
+    }
 };

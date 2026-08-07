@@ -14,8 +14,7 @@ class ProductImageController extends Controller
 {
     public function __construct(
         private ImageService $imageService
-    ) {
-    }
+    ) {}
 
     public function store(
         Request $request,
@@ -52,11 +51,9 @@ class ProductImageController extends Controller
                 'url' => $uploaded['url'],
                 'public_id' => $uploaded['public_id'],
 
-                'is_primary' =>
-                    ! $hasPrimary && $index === 0,
+                'is_primary' => ! $hasPrimary && $index === 0,
 
-                'sort_order' =>
-                    $nextSortOrder + $index,
+                'sort_order' => $nextSortOrder + $index,
             ]);
         }
 

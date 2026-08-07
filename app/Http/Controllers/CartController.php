@@ -19,7 +19,6 @@ class CartController extends Controller
         ]);
     }
 
-
     public function store(
         Request $request,
         Product $product,
@@ -46,7 +45,6 @@ class CartController extends Controller
             );
     }
 
-
     public function update(
         Request $request,
         Product $product,
@@ -71,7 +69,6 @@ class CartController extends Controller
         );
     }
 
-
     public function destroy(
         Product $product,
         CartService $cart
@@ -83,7 +80,6 @@ class CartController extends Controller
             'تم حذف المنتج من السلة.'
         );
     }
-
 
     public function clear(
         CartService $cart

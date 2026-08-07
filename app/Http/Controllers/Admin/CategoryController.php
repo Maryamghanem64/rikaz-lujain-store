@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Section;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class CategoryController extends Controller
@@ -33,8 +34,15 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'section_id' => ['required', 'exists:sections,id'],
             'name_ar' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255'],
+            'slug' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('categories', 'slug')
+                    ->where('section_id', $request->integer('section_id')),
+            ],
             'sort_order' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
@@ -53,8 +61,16 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'section_id' => ['required', 'exists:sections,id'],
             'name_ar' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255'],
+            'slug' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('categories', 'slug')
+                    ->where('section_id', $request->integer('section_id'))
+                    ->ignore($category->id),
+            ],
             'sort_order' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
