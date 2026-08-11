@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 #[Fillable([
     'product_id',
@@ -31,5 +32,28 @@ class ProductImage extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function isDisplayableOnStorefront(): bool
+    {
+        $diskName = config('filesystems.product_images_disk');
+        $diskConfig = config("filesystems.disks.{$diskName}");
+
+        if (($diskConfig['driver'] ?? null) !== 'local' || blank($this->public_id)) {
+            return true;
+        }
+
+        $localPath = Storage::disk($diskName)->path($this->public_id);
+        $dimensions = is_file($localPath) ? @getimagesize($localPath) : false;
+
+        if ($dimensions === false || ! str_starts_with((string) ($dimensions['mime'] ?? ''), 'image/')) {
+            return false;
+        }
+
+        [$width, $height] = $dimensions;
+
+        // Product photography should be square or portrait. Reject wide
+        // development screenshots instead of presenting them as jewelry.
+        return $width > 0 && $height > 0 && ($width / $height) <= 1.35;
     }
 }

@@ -55,10 +55,14 @@ class OrderWorkflowTest extends TestCase
     public function test_whish_verification_is_pending_then_idempotently_converts_reservation_to_sale(): void
     {
         Storage::fake('public');
+        Storage::fake('payment_proofs');
         [$product, $zone, $admin] = $this->catalog();
         $order = $this->createOrder($product, $zone, 'whish');
         $proof = $order->paymentProofs()->firstOrFail();
 
+        Storage::disk('payment_proofs')->assertExists($proof->public_id);
+        Storage::disk('public')->assertMissing('payment-proofs/'.$proof->public_id);
+        $this->assertSame($proof->public_id, $proof->url);
         $this->assertSame('pending', $proof->review_status);
         $this->assertSame('pending_verification', $order->payment_status);
         $this->assertInventory($product, 1, 1);
@@ -69,6 +73,23 @@ class OrderWorkflowTest extends TestCase
 
         $this->assertInventory($product, 0, 0);
         $this->assertSame('verified', $order->fresh()->payment_status);
+    }
+
+    public function test_whish_rejection_still_records_reviewer_reason_and_statuses(): void
+    {
+        Storage::fake('payment_proofs');
+        [$product, $zone, $admin] = $this->catalog();
+        $order = $this->createOrder($product, $zone, 'whish');
+        $proof = $order->paymentProofs()->firstOrFail();
+
+        app(PaymentProofService::class)->reject($order, $proof, $admin, 'Unreadable receipt');
+
+        $this->assertSame('payment_rejected', $order->fresh()->status);
+        $this->assertSame('rejected', $order->fresh()->payment_status);
+        $this->assertSame('rejected', $proof->fresh()->review_status);
+        $this->assertSame($admin->id, $proof->fresh()->reviewed_by);
+        $this->assertSame('Unreadable receipt', $proof->fresh()->rejection_reason);
+        $this->assertNotNull($proof->fresh()->reviewed_at);
     }
 
     public function test_manual_release_rejects_confirmed_orders(): void

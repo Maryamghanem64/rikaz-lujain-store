@@ -23,7 +23,7 @@ class StorefrontController extends Controller
         $featuredProducts = Product::query()
             ->with([
                 'category.section',
-                'primaryImage',
+                'images',
             ])
             ->storefrontAvailable()
             ->where('is_featured', true)
@@ -34,7 +34,7 @@ class StorefrontController extends Controller
         $newProducts = Product::query()
             ->with([
                 'category.section',
-                'primaryImage',
+                'images',
             ])
             ->storefrontAvailable()
             ->latest()
@@ -67,7 +67,7 @@ class StorefrontController extends Controller
         $productsQuery = Product::query()
             ->with([
                 'category.section',
-                'primaryImage',
+                'images',
             ])
             ->where('is_active', true)
             ->whereHas(
@@ -167,7 +167,7 @@ class StorefrontController extends Controller
         $productsQuery = Product::query()
             ->with([
                 'category.section',
-                'primaryImage',
+                'images',
             ])
             ->where('category_id', $category->id)
             ->where('is_active', true);

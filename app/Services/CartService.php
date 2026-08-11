@@ -26,7 +26,7 @@ class CartService
         $products = Product::query()
             ->with([
                 'category.section',
-                'primaryImage',
+                'images',
             ])
             ->storefrontAvailable()
             ->whereIn('id', array_keys($cart))

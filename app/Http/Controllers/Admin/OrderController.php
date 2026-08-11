@@ -78,7 +78,7 @@ class OrderController extends Controller
     public function show(Order $order): View
     {
         $order->load([
-            'items.product',
+            'items.product.category.section',
             'deliveryZone',
             'paymentProofs.reviewer',
             'statusHistory.changedBy',

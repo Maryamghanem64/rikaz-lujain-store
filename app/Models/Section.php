@@ -32,4 +32,9 @@ class Section extends Model
     {
         return $this->hasMany(Category::class);
     }
+
+    public function administrators(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
 }

@@ -36,7 +36,7 @@ class AuthController extends Controller
                 ]);
             }
 
-            return redirect()->intended('/admin/dashboard');
+            return redirect()->intended(route('admin.dashboard'));
         }
 
         return back()
@@ -53,6 +53,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/admin/login');
+        return redirect()->route('admin.login');
     }
 }

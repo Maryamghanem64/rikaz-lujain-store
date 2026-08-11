@@ -9,16 +9,20 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Services\ImageService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        abort_unless($request->user()->section_id !== null, 403);
+
         $products = Product::with([
             'category.section',
             'primaryImage',
         ])
+            ->whereHas('category', fn ($query) => $query->where('section_id', $request->user()->section_id))
             ->latest()
             ->paginate(20);
 
@@ -28,11 +32,13 @@ class ProductController extends Controller
         );
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
+        abort_unless($request->user()->section_id !== null, 403);
+
         $categories = Category::with('section')
             ->where('is_active', true)
-            ->orderBy('section_id')
+            ->where('section_id', $request->user()->section_id)
             ->orderBy('sort_order')
             ->get();
 
@@ -67,9 +73,11 @@ class ProductController extends Controller
 
     public function edit(Product $product): View
     {
+        abort_unless(request()->user()->managesProduct($product), 403);
+
         $categories = Category::with('section')
             ->where('is_active', true)
-            ->orderBy('section_id')
+            ->where('section_id', request()->user()->section_id)
             ->orderBy('sort_order')
             ->get();
 
@@ -85,6 +93,8 @@ class ProductController extends Controller
         UpdateProductRequest $request,
         Product $product
     ): RedirectResponse {
+        abort_unless($request->user()->managesProduct($product), 403);
+
         $data = $request->validated();
 
         $data['is_active'] =
@@ -105,6 +115,8 @@ class ProductController extends Controller
         Product $product,
         ImageService $imageService
     ): RedirectResponse {
+        abort_unless(request()->user()->managesProduct($product), 403);
+
         if ($product->orderItems()->exists()) {
             $product->update([
                 'is_active' => false,

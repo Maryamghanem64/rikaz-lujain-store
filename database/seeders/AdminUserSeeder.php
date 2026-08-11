@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Section;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use RuntimeException;
@@ -10,22 +11,23 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = config('store.admin.email');
-        $password = config('store.admin.password');
+        foreach (['rikaz', 'lujain'] as $slug) {
+            $section = Section::where('slug', $slug)->firstOrFail();
+            $credentials = config("store.admins.{$slug}");
 
-        if (blank($email) || blank($password)) {
-            throw new RuntimeException(
-                'ADMIN_EMAIL and ADMIN_PASSWORD must be defined in the .env file.'
+            if (blank($credentials['email']) || blank($credentials['password'])) {
+                throw new RuntimeException(strtoupper($slug).' admin email and password must be defined in the environment.');
+            }
+
+            User::updateOrCreate(
+                ['email' => $credentials['email']],
+                [
+                    'name' => $credentials['name'],
+                    'password' => $credentials['password'],
+                    'role' => 'admin',
+                    'section_id' => $section->id,
+                ]
             );
         }
-
-        User::updateOrCreate(
-            ['email' => $email],
-            [
-                'name' => config('store.admin.name', 'Store Admin'),
-                'password' => $password,
-                'role' => 'admin',
-            ]
-        );
     }
 }

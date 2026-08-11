@@ -357,7 +357,7 @@ class OrderService
             */
 
             if ($uploadedProof) {
-                $this->imageService->delete(
+                $this->imageService->deletePaymentProof(
                     $uploadedProof['public_id']
                 );
             }

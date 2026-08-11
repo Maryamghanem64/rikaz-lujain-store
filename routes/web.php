@@ -20,6 +20,18 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+Route::get('/admin', function () {
+    if (! auth()->check()) {
+        return redirect()->route('admin.login');
+    }
+
+    if (auth()->user()->role !== 'admin') {
+        abort(403);
+    }
+
+    return redirect()->route('admin.dashboard');
+})->name('admin.entry');
+
 Route::middleware('guest')->group(function () {
 
     Route::get(
@@ -97,6 +109,11 @@ Route::middleware(['auth', 'admin'])
         | Whish Payment Proofs
         |--------------------------------------------------------------------------
         */
+
+        Route::get(
+            'orders/{order}/payment-proofs/{proof}/file',
+            [PaymentProofController::class, 'file']
+        )->name('orders.payment-proofs.file');
 
         Route::post(
             'orders/{order}/payment-proofs/{proof}/verify',

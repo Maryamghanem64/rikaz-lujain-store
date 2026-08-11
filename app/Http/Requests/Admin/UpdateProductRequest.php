@@ -11,7 +11,9 @@ class UpdateProductRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $product = $this->route('product');
+
+        return $product && $this->user()?->managesProduct($product);
     }
 
     public function rules(): array
@@ -21,7 +23,8 @@ class UpdateProductRequest extends FormRequest
         return [
             'category_id' => [
                 'required',
-                'exists:categories,id',
+                Rule::exists('categories', 'id')
+                    ->where('section_id', $this->user()->section_id),
             ],
 
             'name_ar' => [

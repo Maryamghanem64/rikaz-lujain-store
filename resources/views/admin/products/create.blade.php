@@ -1,30 +1,3 @@
 @extends('layouts.admin')
-
 @section('title', 'إضافة منتج')
-
-@section('content')
-
-    <h2>إضافة منتج جديد</h2>
-
-    @if ($errors->any())
-        <div>
-            @foreach ($errors->all() as $error)
-                <p>{{ $error }}</p>
-            @endforeach
-        </div>
-    @endif
-
-    <form
-        method="POST"
-        action="{{ route('admin.products.store') }}"
-    >
-        @csrf
-
-        @include('admin.products._form')
-
-        <button type="submit">
-            حفظ المنتج
-        </button>
-    </form>
-
-@endsection
+@section('content')<div class="mx-auto max-w-4xl space-y-6"><div><a href="{{ route('admin.products.index') }}" class="text-sm text-muted-600">← العودة إلى المنتجات</a><h1 class="mt-2 text-2xl font-semibold">إضافة منتج جديد</h1></div>@if ($errors->any())<div class="alert-error">@foreach ($errors->all() as $error)<p>{{ $error }}</p>@endforeach</div>@endif<form method="POST" action="{{ route('admin.products.store') }}" class="space-y-6">@csrf @include('admin.products._form')<div class="flex justify-end"><button type="submit" class="btn-primary min-w-40">حفظ المنتج</button></div></form></div>@endsection

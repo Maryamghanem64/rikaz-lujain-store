@@ -11,7 +11,7 @@ class StoreProductRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()?->role === 'admin' && $this->user()->section_id !== null;
     }
 
     public function rules(): array
@@ -19,7 +19,8 @@ class StoreProductRequest extends FormRequest
         return [
             'category_id' => [
                 'required',
-                'exists:categories,id',
+                Rule::exists('categories', 'id')
+                    ->where('section_id', $this->user()->section_id),
             ],
 
             'name_ar' => [

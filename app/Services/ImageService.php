@@ -9,42 +9,43 @@ class ImageService
 {
     public function uploadProductImage(UploadedFile $file): array
     {
-        return $this->upload(
-            $file,
-            'products'
-        );
-    }
-
-    public function uploadPaymentProof(UploadedFile $file): array
-    {
-        return $this->upload(
-            $file,
-            'payment-proofs'
-        );
-    }
-
-    private function upload(
-        UploadedFile $file,
-        string $folder
-    ): array {
-        $path = $file->store(
-            $folder,
-            'public'
-        );
+        $disk = config('filesystems.product_images_disk');
+        $path = $file->store('products', $disk);
 
         return [
-            'url' => Storage::url($path),
+            'url' => Storage::disk($disk)->url($path),
             'public_id' => $path,
         ];
     }
 
-    public function delete(?string $publicId): void
+    public function uploadPaymentProof(UploadedFile $file): array
+    {
+        $path = $file->store('', config('filesystems.payment_proofs_disk'));
+
+        return [
+            // `url` is required by the existing schema. It intentionally holds
+            // an internal key, never a web-accessible URL.
+            'url' => $path,
+            'public_id' => $path,
+        ];
+    }
+
+    public function deleteProductImage(?string $publicId): void
     {
         if (blank($publicId)) {
             return;
         }
 
-        Storage::disk('public')
+        Storage::disk(config('filesystems.product_images_disk'))
             ->delete($publicId);
+    }
+
+    public function deletePaymentProof(?string $storageKey): void
+    {
+        if (blank($storageKey)) {
+            return;
+        }
+
+        Storage::disk(config('filesystems.payment_proofs_disk'))->delete($storageKey);
     }
 }

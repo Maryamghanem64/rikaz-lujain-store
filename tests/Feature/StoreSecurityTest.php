@@ -15,20 +15,21 @@ class StoreSecurityTest extends TestCase
 
     public function test_category_slug_is_unique_only_within_its_section(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
         $rikaz = $this->section('rikaz');
         $lujain = $this->section('lujain');
+        $rikazAdmin = User::factory()->create(['role' => 'admin', 'section_id' => $rikaz->id]);
+        $lujainAdmin = User::factory()->create(['role' => 'admin', 'section_id' => $lujain->id]);
         Category::create([
             'section_id' => $rikaz->id, 'name_ar' => 'خواتم', 'slug' => 'rings',
             'sort_order' => 0, 'is_active' => true,
         ]);
 
-        $this->actingAs($admin)->post(route('admin.categories.store'), [
+        $this->actingAs($lujainAdmin)->post(route('admin.categories.store'), [
             'section_id' => $lujain->id, 'name_ar' => 'خواتم', 'slug' => 'rings',
             'sort_order' => 0, 'is_active' => '1',
         ])->assertSessionHasNoErrors();
 
-        $this->actingAs($admin)->post(route('admin.categories.store'), [
+        $this->actingAs($rikazAdmin)->post(route('admin.categories.store'), [
             'section_id' => $rikaz->id, 'name_ar' => 'مكرر', 'slug' => 'rings',
             'sort_order' => 0, 'is_active' => '1',
         ])->assertSessionHasErrors('slug');

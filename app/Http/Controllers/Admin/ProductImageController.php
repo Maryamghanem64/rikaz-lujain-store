@@ -20,6 +20,8 @@ class ProductImageController extends Controller
         Request $request,
         Product $product
     ): RedirectResponse {
+        abort_unless($request->user()->managesProduct($product), 403);
+
         $validated = $request->validate([
             'images' => [
                 'required',
@@ -67,6 +69,8 @@ class ProductImageController extends Controller
         Product $product,
         ProductImage $image
     ): RedirectResponse {
+        abort_unless(request()->user()->managesProduct($product), 403);
+
         abort_unless(
             $image->product_id === $product->id,
             404
@@ -92,6 +96,8 @@ class ProductImageController extends Controller
         Request $request,
         Product $product
     ): RedirectResponse {
+        abort_unless($request->user()->managesProduct($product), 403);
+
         $validated = $request->validate([
             'orders' => [
                 'required',
@@ -123,6 +129,8 @@ class ProductImageController extends Controller
         Product $product,
         ProductImage $image
     ): RedirectResponse {
+        abort_unless(request()->user()->managesProduct($product), 403);
+
         abort_unless(
             $image->product_id === $product->id,
             404
@@ -130,7 +138,7 @@ class ProductImageController extends Controller
 
         $wasPrimary = $image->is_primary;
 
-        $this->imageService->delete(
+        $this->imageService->deleteProductImage(
             $image->public_id
         );
 

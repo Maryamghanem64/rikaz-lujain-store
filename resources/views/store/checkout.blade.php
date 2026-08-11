@@ -15,16 +15,17 @@
 @endphp
 
 
-<section class="mx-auto max-w-7xl px-4 py-12">
+<section class="container-shell py-8 sm:py-11">
 
     <div class="mb-8">
 
-        <h1 class="text-3xl font-bold">
+        <p class="eyebrow">خطوة أخيرة</p>
+        <h1 class="editorial-title mt-2 text-4xl sm:text-5xl">
             إتمام الطلب
         </h1>
 
-        <p class="mt-2 text-stone-500">
-            لا تحتاج إلى إنشاء حساب.
+        <p class="section-copy">
+            معلومات واضحة وخطوات قصيرة، من دون الحاجة إلى إنشاء حساب.
         </p>
 
     </div>
@@ -32,7 +33,7 @@
 
     @if ($errors->any())
 
-        <div class="mb-6 rounded-xl bg-red-50 p-4 text-red-700">
+        <div class="alert-error mb-6">
 
             @foreach ($errors->all() as $error)
                 <p>{{ $error }}</p>
@@ -57,19 +58,19 @@
         @csrf
 
 
-        <div class="grid gap-8 lg:grid-cols-[1fr_380px]">
+        <div class="grid gap-8 lg:grid-cols-[1fr_380px] lg:items-start">
 
 
             {{-- CUSTOMER INFORMATION --}}
-            <div class="space-y-8">
+            <div class="space-y-5">
 
 
                 <div
-                    class="rounded-2xl border border-stone-200 bg-white p-6"
+                    class="rounded-sm border border-line-200 bg-white p-5 sm:p-6"
                 >
 
-                    <h2 class="mb-6 text-xl font-bold">
-                        معلومات التواصل
+                    <h2 class="mb-5 text-xl font-semibold">
+                        <span class="ml-2 text-sm text-muted-600">01</span> معلومات التواصل
                     </h2>
 
 
@@ -79,7 +80,7 @@
 
                             <label
                                 for="customer_name"
-                                class="mb-2 block font-medium"
+                                class="field-label"
                             >
                                 الاسم الكامل *
                             </label>
@@ -89,7 +90,7 @@
                                 id="customer_name"
                                 name="customer_name"
                                 value="{{ old('customer_name') }}"
-                                class="w-full rounded-xl border border-stone-300 px-4 py-3"
+                                class="field-control"
                                 required
                             >
 
@@ -100,7 +101,7 @@
 
                             <label
                                 for="customer_phone"
-                                class="mb-2 block font-medium"
+                                class="field-label"
                             >
                                 رقم الهاتف *
                             </label>
@@ -110,7 +111,7 @@
                                 id="customer_phone"
                                 name="customer_phone"
                                 value="{{ old('customer_phone') }}"
-                                class="w-full rounded-xl border border-stone-300 px-4 py-3"
+                                class="field-control"
                                 required
                             >
 
@@ -121,7 +122,7 @@
 
                             <label
                                 for="customer_whatsapp"
-                                class="mb-2 block font-medium"
+                                class="field-label"
                             >
                                 WhatsApp
                             </label>
@@ -131,7 +132,7 @@
                                 id="customer_whatsapp"
                                 name="customer_whatsapp"
                                 value="{{ old('customer_whatsapp') }}"
-                                class="w-full rounded-xl border border-stone-300 px-4 py-3"
+                                class="field-control"
                             >
 
                             <p class="mt-1 text-sm text-stone-500">
@@ -148,11 +149,11 @@
 
                 {{-- DELIVERY --}}
                 <div
-                    class="rounded-2xl border border-stone-200 bg-white p-6"
+                    class="rounded-sm border border-line-200 bg-white p-5 sm:p-6"
                 >
 
-                    <h2 class="mb-6 text-xl font-bold">
-                        معلومات التوصيل
+                    <h2 class="mb-5 text-xl font-semibold">
+                        <span class="ml-2 text-sm text-muted-600">02</span> معلومات التوصيل
                     </h2>
 
 
@@ -162,7 +163,7 @@
 
                             <label
                                 for="delivery_zone_id"
-                                class="mb-2 block font-medium"
+                                class="field-label"
                             >
                                 منطقة التوصيل *
                             </label>
@@ -170,7 +171,7 @@
                             <select
                                 id="delivery_zone_id"
                                 name="delivery_zone_id"
-                                class="w-full rounded-xl border border-stone-300 px-4 py-3"
+                                class="field-control"
                                 required
 
                                 @change="
@@ -218,7 +219,7 @@
 
                             <label
                                 for="address"
-                                class="mb-2 block font-medium"
+                                class="field-label"
                             >
                                 العنوان بالتفصيل *
                             </label>
@@ -227,7 +228,7 @@
                                 id="address"
                                 name="address"
                                 rows="4"
-                                class="w-full rounded-xl border border-stone-300 px-4 py-3"
+                                class="field-control"
                                 required
                             >{{ old('address') }}</textarea>
 
@@ -238,7 +239,7 @@
 
                             <label
                                 for="notes"
-                                class="mb-2 block font-medium"
+                                class="field-label"
                             >
                                 ملاحظات
                             </label>
@@ -247,7 +248,7 @@
                                 id="notes"
                                 name="notes"
                                 rows="3"
-                                class="w-full rounded-xl border border-stone-300 px-4 py-3"
+                                class="field-control"
                             >{{ old('notes') }}</textarea>
 
                         </div>
@@ -260,18 +261,18 @@
 
                 {{-- PAYMENT --}}
                 <div
-                    class="rounded-2xl border border-stone-200 bg-white p-6"
+                    class="rounded-sm border border-line-200 bg-white p-5 sm:p-6"
                 >
 
-                    <h2 class="mb-6 text-xl font-bold">
-                        طريقة الدفع
+                    <h2 class="mb-5 text-xl font-semibold">
+                        <span class="ml-2 text-sm text-muted-600">03</span> طريقة الدفع
                     </h2>
 
 
                     <div class="space-y-4">
 
                         <label
-                            class="flex cursor-pointer items-center gap-3 rounded-xl border border-stone-200 p-4"
+                            class="flex min-h-20 cursor-pointer items-center gap-3 rounded-sm border border-line-200 p-4 transition hover:border-lujain-700 has-[:checked]:border-lujain-700 has-[:checked]:bg-lujain-700/5"
                         >
 
                             <input
@@ -296,7 +297,7 @@
 
 
                         <label
-                            class="flex cursor-pointer items-center gap-3 rounded-xl border border-stone-200 p-4"
+                            class="flex min-h-20 cursor-pointer items-center gap-3 rounded-sm border border-line-200 p-4 transition hover:border-lujain-700 has-[:checked]:border-lujain-700 has-[:checked]:bg-lujain-700/5"
                         >
 
                             <input
@@ -324,7 +325,7 @@
                     {{-- WHISH --}}
                     <div
                         x-show="paymentMethod === 'whish'"
-                        class="mt-6 rounded-xl bg-stone-50 p-5"
+                        class="mt-6 border-r-2 border-amber-500 bg-amber-50 p-5"
                     >
 
                         @if ($settings?->whish_number)
@@ -364,7 +365,7 @@
 
                             <label
                                 for="payment_proof"
-                                class="mb-2 block font-medium"
+                                class="field-label"
                             >
                                 صورة إيصال التحويل *
                             </label>
@@ -392,7 +393,7 @@
 
 
                 {{-- POLICY --}}
-                <label class="flex items-start gap-3">
+                <label class="flex cursor-pointer items-start gap-3 rounded-sm border border-line-200 bg-white p-5">
 
                     <input
                         type="checkbox"
@@ -403,7 +404,7 @@
                         @checked(old('policy_agreement'))
                     >
 
-                    <span class="text-sm text-stone-600">
+                    <span class="text-sm text-stone-600"><strong class="mb-1 block text-lg font-semibold text-ink-900">04 تأكيد الطلب</strong>
                         أوافق على سياسة الدفع والتوصيل
                         وسياسة المتجر.
                     </span>
@@ -418,10 +419,10 @@
             <aside>
 
                 <div
-                    class="sticky top-6 rounded-2xl border border-stone-200 bg-white p-6"
+                    class="rounded-sm border border-line-200 bg-white p-5 sm:p-6 lg:sticky lg:top-28"
                 >
 
-                    <h2 class="text-xl font-bold">
+                    <h2 class="text-xl font-semibold">
                         ملخص الطلب
                     </h2>
 
@@ -509,7 +510,7 @@
 
                     <button
                         type="submit"
-                        class="mt-6 w-full rounded-xl bg-stone-900 px-6 py-4 font-semibold text-white"
+                        class="btn-primary mt-6 w-full text-base"
                     >
                         تأكيد الطلب
                     </button>

@@ -226,11 +226,27 @@
 
 
             {{-- PRODUCTS --}}
+            @php
+                $orderBrands = $order->items
+                    ->map(fn ($item) => $item->product?->category?->section?->name_ar)
+                    ->filter()
+                    ->unique()
+                    ->values();
+            @endphp
             <section class="rounded-xl border bg-white p-6">
 
                 <h3 class="mb-5 text-lg font-bold">
                     المنتجات
                 </h3>
+
+                <div class="mb-5 flex flex-wrap gap-2">
+                    @foreach ($orderBrands as $brand)
+                        <span class="status-badge bg-[#f4ecee] text-rikaz-800">{{ $brand }}</span>
+                    @endforeach
+                    @if ($orderBrands->count() > 1)
+                        <span class="status-badge border border-rikaz-700/20 bg-white text-rikaz-800">طلب مختلط العلامات</span>
+                    @endif
+                </div>
 
 
                 <div class="space-y-5">
@@ -244,6 +260,10 @@
                                 <p class="font-semibold">
                                     {{ $item->product_name_ar }}
                                 </p>
+
+                                @if ($item->product?->category?->section)
+                                    <span class="mt-2 inline-flex rounded-full bg-[#f4ecee] px-2.5 py-1 text-[11px] font-semibold text-rikaz-800">{{ $item->product->category->section->name_ar }}</span>
+                                @endif
 
 
                                 @if ($item->stone_name)
@@ -349,14 +369,14 @@
 
                             {{-- RECEIPT IMAGE --}}
                             <a
-                                href="{{ $proof->url }}"
+                                href="{{ route('admin.orders.payment-proofs.file', [$order, $proof]) }}"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="block"
                             >
 
                                 <img
-                                    src="{{ $proof->url }}"
+                                    src="{{ route('admin.orders.payment-proofs.file', [$order, $proof]) }}"
                                     alt="إيصال Whish"
                                     class="mx-auto max-h-96 max-w-full rounded-lg object-contain"
                                 >
@@ -463,7 +483,7 @@
 
                                         <button
                                             type="submit"
-                                            class="w-full rounded-lg bg-green-700 px-4 py-3 font-semibold text-white hover:bg-green-800"
+                                            class="w-full rounded-lg bg-rikaz-700 px-4 py-3 font-semibold text-white hover:bg-rikaz-800"
                                         >
                                             ✓ قبول الإيصال وتأكيد الدفع
                                         </button>
@@ -808,7 +828,7 @@
 
                         <button
                             type="submit"
-                            class="mt-3 w-full rounded-lg bg-green-700 px-4 py-3 font-semibold text-white"
+                            class="mt-3 w-full rounded-lg bg-rikaz-700 px-4 py-3 font-semibold text-white"
                             onclick="return confirm('تأكيد هذا الطلب؟');"
                         >
                             ✓ تأكيد الطلب النقدي
@@ -935,7 +955,7 @@
 
                         <button
                             type="submit"
-                            class="w-full rounded-lg bg-green-800 px-4 py-3 text-white"
+                            class="w-full rounded-lg bg-rikaz-700 px-4 py-3 text-white hover:bg-rikaz-800"
                         >
                             ✓ تم التسليم
                         </button>

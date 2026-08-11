@@ -1,115 +1,15 @@
 @extends('layouts.admin')
-
 @section('title', 'إدارة المنتجات')
-
 @section('content')
-
-    <h2>إدارة المنتجات</h2>
-
-    @if (session('success'))
-        <div>
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if ($errors->any())
-        <div>
-            @foreach ($errors->all() as $error)
-                <p>{{ $error }}</p>
-            @endforeach
-        </div>
-    @endif
-
-    <p>
-        <a href="{{ route('admin.products.create') }}">
-            إضافة منتج جديد
-        </a>
-    </p>
-
-    @forelse ($products as $product)
-
-        <article>
-
-            @if ($product->primaryImage)
-                <img
-                    src="{{ $product->primaryImage->url }}"
-                    alt="{{ $product->name_ar }}"
-                    width="120"
-                >
-            @endif
-
-            <h3>
-                {{ $product->name_ar }}
-            </h3>
-
-            <p>
-                القسم:
-                {{ $product->category->section->name_ar }}
-            </p>
-
-            <p>
-                الفئة:
-                {{ $product->category->name_ar }}
-            </p>
-
-            <p>
-                السعر:
-                ${{ $product->price }}
-            </p>
-
-            <p>
-                المخزون:
-                {{ $product->stock_quantity }}
-            </p>
-
-            <p>
-                المحجوز:
-                {{ $product->reserved_quantity }}
-            </p>
-
-            <p>
-                المتاح:
-                {{ $product->available_quantity }}
-            </p>
-
-            <p>
-                الحالة:
-                {{ $product->is_active ? 'فعّال' : 'مخفي' }}
-            </p>
-
-            @if ($product->is_featured)
-                <p>
-                    ⭐ منتج مميز
-                </p>
-            @endif
-
-            <a href="{{ route('admin.products.edit', $product) }}">
-                تعديل
-            </a>
-
-            <form
-                method="POST"
-                action="{{ route('admin.products.destroy', $product) }}"
-                onsubmit="return confirm('هل أنت متأكد؟');"
-            >
-                @csrf
-                @method('DELETE')
-
-                <button type="submit">
-                    حذف
-                </button>
-            </form>
-
-        </article>
-
-        <hr>
-
-    @empty
-
-        <p>لا توجد منتجات حتى الآن.</p>
-
-    @endforelse
-
-    {{ $products->links() }}
-
+<div class="space-y-6">
+    <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center"><div><p class="eyebrow">الكتالوج</p><h1 class="mt-2 text-2xl font-semibold">إدارة المنتجات</h1><p class="mt-1 text-sm text-muted-600">الأسعار والمخزون وظهور القطع في المتجر.</p></div><a href="{{ route('admin.products.create') }}" class="btn-primary">إضافة منتج جديد</a></div>
+    @if (session('success'))<div class="alert-success">{{ session('success') }}</div>@endif
+    @if ($errors->any())<div class="alert-error">@foreach ($errors->all() as $error)<p>{{ $error }}</p>@endforeach</div>@endif
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        @forelse ($products as $product)
+        <article class="admin-card flex flex-col"><div class="flex gap-4"><div class="size-24 shrink-0 overflow-hidden rounded-xl bg-ivory-200">@if ($product->primaryImage)<img src="{{ $product->primaryImage->url }}" alt="{{ $product->name_ar }}" class="h-full w-full object-cover">@else<div class="grid h-full place-items-center text-xs text-stone-400">بلا صورة</div>@endif</div><div class="min-w-0"><p class="text-xs text-muted-600">{{ $product->category->section->name_ar }} · {{ $product->category->name_ar }}</p><h2 class="mt-1 truncate font-semibold">{{ $product->name_ar }}</h2><p dir="ltr" class="mt-2 w-fit text-lg font-semibold">${{ number_format((float) $product->price, 2) }}</p><div class="mt-2 flex flex-wrap gap-2"><span class="status-badge {{ $product->is_active ? 'bg-emerald-50 text-emerald-800' : 'bg-stone-100 text-stone-600' }}">{{ $product->is_active ? 'ظاهر' : 'مخفي' }}</span>@if ($product->is_featured)<span class="status-badge bg-amber-50 text-amber-800">مميز</span>@endif</div></div></div><div class="mt-5 grid grid-cols-3 divide-x divide-x-reverse divide-line-200 rounded-xl bg-ivory-200 py-3 text-center text-xs"><div><span class="block text-muted-600">المخزون</span><strong class="mt-1 block text-sm">{{ $product->stock_quantity }}</strong></div><div><span class="block text-muted-600">المحجوز</span><strong class="mt-1 block text-sm">{{ $product->reserved_quantity }}</strong></div><div><span class="block text-muted-600">المتاح</span><strong class="mt-1 block text-sm {{ $product->available_quantity <= 0 ? 'text-red-700' : '' }}">{{ $product->available_quantity }}</strong></div></div><div class="mt-5 flex gap-2 border-t border-line-200 pt-4"><a href="{{ route('admin.products.edit', $product) }}" class="btn-secondary flex-1">تعديل</a><form method="POST" action="{{ route('admin.products.destroy', $product) }}" onsubmit="return confirm('هل أنت متأكد؟');">@csrf @method('DELETE')<button type="submit" class="min-h-11 rounded-xl px-3 text-sm font-medium text-red-700 hover:bg-red-50">حذف</button></form></div></article>
+        @empty <div class="admin-card col-span-full py-12 text-center text-muted-600">لا توجد منتجات حتى الآن.</div> @endforelse
+    </div>
+    <div>{{ $products->links() }}</div>
+</div>
 @endsection
