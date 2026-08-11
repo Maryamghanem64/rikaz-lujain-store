@@ -134,7 +134,7 @@ class ProductController extends Controller
         $product->delete();
 
         $imagePublicIds->each(
-            fn (?string $publicId) => $imageService->delete($publicId)
+            fn (?string $publicId) => $imageService->deleteProductImage($publicId)
         );
 
         return redirect()

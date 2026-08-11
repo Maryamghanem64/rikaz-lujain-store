@@ -74,7 +74,7 @@
                             @if($useEditorialImage && $categoryEditorialImage)
                                 <img src="{{ asset($categoryEditorialImage) }}" alt="{{ $category->name_ar }}" @class(['h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]', 'lujain-ring-category-image' => $categoryKey === 'lujain.rings'])>
                             @elseif($categoryImage)
-                                <img src="{{ $categoryImage->url }}" alt="{{ $category->name_ar }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]">
+                                <img src="{{ $categoryImage->displayUrl() }}" alt="{{ $category->name_ar }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]">
                             @elseif($categoryEditorialImage)
                                 <img src="{{ asset($categoryEditorialImage) }}" alt="صورة تحريرية لفئة {{ $category->name_ar }} من {{ $section->name_ar }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]">
                             @else

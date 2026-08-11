@@ -5,7 +5,7 @@
 <article class="product-card group min-w-0 overflow-hidden border border-line-200 bg-white">
     <a href="{{ route('store.product', [$sectionSlug, $product->slug]) }}" class="product-media relative block aspect-[4/5] overflow-hidden bg-[#efebe5]">
         @if ($storefrontImage)
-            <img src="{{ $storefrontImage->url }}" alt="{{ $product->name_ar }}" loading="lazy" class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.025]">
+            <img src="{{ $storefrontImage->displayUrl() }}" alt="{{ $product->name_ar }}" loading="lazy" class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.025]">
         @else
             <div class="flex h-full flex-col items-center justify-center px-5 text-center text-stone-400">
                 <span class="block h-px w-10 bg-stone-300"></span>

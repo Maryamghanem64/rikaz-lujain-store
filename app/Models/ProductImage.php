@@ -34,6 +34,19 @@ class ProductImage extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function displayUrl(): string
+    {
+        $diskName = config('filesystems.product_images_disk');
+        $diskConfig = config("filesystems.disks.{$diskName}");
+
+        if (($diskConfig['driver'] ?? null) === 'local'
+            && ($diskConfig['visibility'] ?? null) === 'public') {
+            return Storage::disk($diskName)->url($this->public_id);
+        }
+
+        return route('media.products.show', $this);
+    }
+
     public function isDisplayableOnStorefront(): bool
     {
         $diskName = config('filesystems.product_images_disk');

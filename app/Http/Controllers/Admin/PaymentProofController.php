@@ -32,10 +32,17 @@ class PaymentProofController extends Controller
 
         abort_unless($disk->exists($storageKey), 404);
 
+        $mimeType = $disk->mimeType($storageKey);
+
+        abort_unless(in_array($mimeType, ['image/jpeg', 'image/png', 'image/webp'], true), 404);
+
         return $disk->response(
             $storageKey,
             null,
-            ['X-Content-Type-Options' => 'nosniff'],
+            [
+                'Content-Type' => $mimeType,
+                'X-Content-Type-Options' => 'nosniff',
+            ],
             'inline'
         );
     }

@@ -49,6 +49,7 @@ return [
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
+            'upload_directory' => 'products',
         ],
 
         'payment_proofs' => [
@@ -56,6 +57,35 @@ return [
             'root' => storage_path('app/private/payment-proofs'),
             'visibility' => 'private',
             'throw' => false,
+            'report' => false,
+        ],
+
+        'railway_products' => [
+            'driver' => 's3',
+            'key' => env('RAILWAY_BUCKET_ACCESS_KEY_ID'),
+            'secret' => env('RAILWAY_BUCKET_SECRET_ACCESS_KEY'),
+            'region' => env('RAILWAY_BUCKET_REGION', 'auto'),
+            'bucket' => env('RAILWAY_BUCKET_NAME'),
+            'endpoint' => env('RAILWAY_BUCKET_ENDPOINT'),
+            'use_path_style_endpoint' => env('RAILWAY_BUCKET_USE_PATH_STYLE_ENDPOINT', false),
+            'root' => 'products',
+            'visibility' => 'private',
+            'throw' => true,
+            'report' => false,
+            'upload_directory' => '',
+        ],
+
+        'railway_payment_proofs' => [
+            'driver' => 's3',
+            'key' => env('RAILWAY_BUCKET_ACCESS_KEY_ID'),
+            'secret' => env('RAILWAY_BUCKET_SECRET_ACCESS_KEY'),
+            'region' => env('RAILWAY_BUCKET_REGION', 'auto'),
+            'bucket' => env('RAILWAY_BUCKET_NAME'),
+            'endpoint' => env('RAILWAY_BUCKET_ENDPOINT'),
+            'use_path_style_endpoint' => env('RAILWAY_BUCKET_USE_PATH_STYLE_ENDPOINT', false),
+            'root' => 'payment-proofs',
+            'visibility' => 'private',
+            'throw' => true,
             'report' => false,
         ],
 

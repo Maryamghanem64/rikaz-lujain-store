@@ -10,7 +10,7 @@
 <section class="container-shell py-7 sm:py-10">
     @if ($errors->any())<div class="alert-error mb-6">@foreach ($errors->all() as $error)<p>{{ $error }}</p>@endforeach</div>@endif
     <div class="grid gap-7 lg:grid-cols-[1.12fr_.88fr] lg:gap-12">
-        <div x-data="{ image: @js($primaryImage?->url) }">
+        <div x-data="{ image: @js($primaryImage?->displayUrl()) }">
             <div class="flex aspect-[4/5] items-center justify-center rounded-sm border border-line-200 bg-[#efebe5] p-5 sm:p-9">
                 @if ($primaryImage)
                     <img :src="image" data-gallery-main alt="{{ $product->name_ar }}" class="h-full w-full object-contain">
@@ -18,7 +18,7 @@
                     <div class="text-center text-stone-400"><span class="mx-auto block h-px w-12 bg-stone-300"></span><p class="mt-4 text-xs">الصورة قيد الإضافة</p></div>
                 @endif
             </div>
-            @if ($storefrontImages->count() > 1)<div class="mt-3 flex gap-3 overflow-x-auto pb-2">@foreach ($storefrontImages as $image)<button type="button" @click="image = @js($image->url)" class="size-20 shrink-0 rounded-sm border border-line-200 bg-white p-1 transition hover:border-lujain-700 sm:size-24"><img src="{{ $image->url }}" alt="صورة إضافية لـ {{ $product->name_ar }}" class="h-full w-full object-cover"></button>@endforeach</div>@endif
+            @if ($storefrontImages->count() > 1)<div class="mt-3 flex gap-3 overflow-x-auto pb-2">@foreach ($storefrontImages as $image)<button type="button" @click="image = @js($image->displayUrl())" class="size-20 shrink-0 rounded-sm border border-line-200 bg-white p-1 transition hover:border-lujain-700 sm:size-24"><img src="{{ $image->displayUrl() }}" alt="صورة إضافية لـ {{ $product->name_ar }}" class="h-full w-full object-cover"></button>@endforeach</div>@endif
         </div>
 
         <div class="rounded-sm border border-line-200 bg-white p-5 sm:p-7 lg:sticky lg:top-28 lg:self-start">

@@ -10,10 +10,15 @@ class ImageService
     public function uploadProductImage(UploadedFile $file): array
     {
         $disk = config('filesystems.product_images_disk');
-        $path = $file->store('products', $disk);
+        $directory = config("filesystems.disks.{$disk}.upload_directory", '');
+        $path = $file->store($directory, $disk);
+        $diskConfig = config("filesystems.disks.{$disk}");
 
         return [
-            'url' => Storage::disk($disk)->url($path),
+            'url' => ($diskConfig['driver'] ?? null) === 'local'
+                && ($diskConfig['visibility'] ?? null) === 'public'
+                    ? Storage::disk($disk)->url($path)
+                    : $path,
             'public_id' => $path,
         ];
     }
