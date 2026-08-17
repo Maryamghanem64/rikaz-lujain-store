@@ -1,59 +1,195 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Rikaz × Lujain — Silver Jewelry E-Commerce Store
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Arabic-first RTL e-commerce platform developed for Rikaz × Lujain, a silver jewelry store focused on handcrafted silver pieces and Yemeni agate.
 
-## About Laravel
+The platform combines two collections:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Rikaz — Men's jewelry
+- Lujain — Women's jewelry
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Live Website
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+https://rikaz-lujain-store-production.up.railway.app/
 
-## Learning Laravel
+Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Customer Side
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Arabic RTL responsive interface
+- Rikaz and Lujain collections
+- Product categories
+- Product search and filtering
+- Product details and image gallery
+- Shopping cart
+- Guest checkout
+- Delivery zones across Lebanon
+- Cash payment
+- Whish Money payment
+- Payment receipt upload
+- Order confirmation
+- Order tracking
+- WhatsApp contact
+- Mobile, tablet, and desktop responsive design
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+Admin Panel
 
-## Agentic Development
+- Secure admin authentication
+- Dashboard
+- Product management
+- Category management
+- Product image management
+- Order management
+- Delivery zone management
+- Delivery fee management
+- Payment receipt verification
+- Inventory management
+- Store settings
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Inventory System
 
-```bash
-composer require laravel/boost --dev
+Each jewelry piece can have its own:
 
-php artisan boost:install
-```
+- Stone
+- Silver purity
+- Size
+- Price
+- Quantity
+- Images
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+The system uses inventory reservation and database transactions to reduce the risk of selling the same unique jewelry piece twice.
 
-## Contributing
+Payment Methods
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Cash
 
-## Code of Conduct
+Customers can place an order and pay when receiving their order.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Whish Money
 
-## Security Vulnerabilities
+Customers can:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Select Whish Money during checkout.
+2. View the payment information.
+3. Upload the payment receipt.
+4. Wait for admin verification.
+5. Receive order confirmation after verification.
 
-## License
+Tech Stack
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# rikaz-lujain-store
+Backend
+
+- Laravel
+- PHP
+- MySQL
+
+Frontend
+
+- Blade
+- Tailwind CSS
+- Alpine.js
+- Arabic RTL UI
+
+Media
+
+- Cloudinary
+
+Deployment
+
+- Railway
+
+Architecture
+
+The project separates controllers from business logic using dedicated services.
+
+Main services include:
+
+- "CartService"
+- "OrderService"
+- "InventoryService"
+- "PaymentProofService"
+- "ImageService"
+
+This keeps the application easier to maintain, test, and extend.
+
+Security & Data Integrity
+
+The platform includes:
+
+- Server-side price calculation
+- Database transactions
+- Inventory reservation
+- Row locking for inventory operations
+- CSRF protection
+- Admin-protected routes
+- Laravel Form Request validation
+- Payment receipt validation
+- Secure environment variables
+- Production configuration with debug mode disabled
+
+Installation
+
+Clone the repository:
+
+git clone https://github.com/Maryamghanem64/rikaz-lujain-store.git
+cd rikaz-lujain-store
+
+Install dependencies:
+
+composer install
+npm install
+
+Create the environment file:
+
+cp .env.example .env
+
+Generate the application key:
+
+php artisan key:generate
+
+Configure your database inside ".env".
+
+Then run:
+
+php artisan migrate
+npm run dev
+php artisan serve
+
+Open:
+
+http://127.0.0.1:8000
+
+Project Scope
+
+The current MVP focuses on:
+
+- Product browsing
+- Cart
+- Checkout
+- Orders
+- Payments
+- Delivery
+- Inventory
+- Admin management
+
+Possible future improvements include:
+
+- Customer accounts
+- Favorites
+- Reviews
+- Coupons
+- Loyalty system
+- Online card payments
+- Automated WhatsApp integration
+- Multi-language support
+
+GitHub Repository
+
+https://github.com/Maryamghanem64/rikaz-lujain-store
+
+Project Type
+
+Real-world client e-commerce project developed to manage products, orders, payments, delivery, and inventory for Rikaz × Lujain.
+
+---
+
+Built with Laravel for Rikaz × Lujain.
